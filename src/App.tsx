@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useTheme } from './hooks/useTheme'
 import { LayoutGallery } from './components/LayoutGallery'
 import { LayoutPreview } from './components/LayoutPreview'
@@ -7,6 +8,13 @@ import { STYLE_VARIANTS, VARIANTS } from './data/variants'
 import type { StyleVariant, ColorMode } from './types/theme'
 
 export default function App() {
+  const [isDsmDark, setIsDsmDark] = useState(false)
+
+  useEffect(() => {
+    document.body.classList.toggle('dsm-dark', isDsmDark)
+    return () => { document.body.classList.remove('dsm-dark') }
+  }, [isDsmDark])
+
   const {
     layoutType,
     variant,
@@ -29,6 +37,15 @@ export default function App() {
             <h1 className="app-header__title">DSM</h1>
           </div>
           <p className="app-header__subtitle">Pick a vibe. Export to AI.</p>
+          <button
+            className="app-header__dark-toggle"
+            onClick={() => setIsDsmDark(d => !d)}
+            type="button"
+            aria-label={isDsmDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDsmDark ? 'Light mode' : 'Dark mode'}
+          >
+            {isDsmDark ? '☀' : '☽'}
+          </button>
         </div>
       </header>
 
