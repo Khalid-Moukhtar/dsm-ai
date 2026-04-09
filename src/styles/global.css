@@ -135,15 +135,15 @@ a:focus-visible {
   background: #ffffff;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
-  padding: 0.875rem 0.75rem;
+  padding: 0.625rem 0.5rem;
   cursor: pointer;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  min-height: 120px;
+  gap: 3px;
+  min-height: 88px;
 }
 
 .layout-card:hover {
@@ -164,10 +164,10 @@ a:focus-visible {
 }
 
 .layout-card__symbol {
-  font-size: 1.375rem;
+  font-size: 1.125rem;
   line-height: 1;
   color: #6b7280;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .layout-card--selected .layout-card__symbol {
@@ -406,6 +406,12 @@ a:focus-visible {
 .saas-sidebar__nav-item:hover {
   background: var(--color-background, #f9fafb);
   color: var(--color-text, #111827);
+}
+
+.saas-sidebar__nav-item--active {
+  background: color-mix(in srgb, var(--color-primary, #6366F1) 10%, transparent);
+  color: var(--color-primary, #6366F1);
+  font-weight: 600;
 }
 
 .saas-sidebar__user {
@@ -703,6 +709,12 @@ a:focus-visible {
   cursor: pointer;
   font-family: var(--font-family, system-ui);
   border-radius: var(--border-radius-md, 8px);
+  transition: color 0.12s, background 0.12s;
+}
+
+.blog-header__nav-item--active {
+  color: var(--color-primary, #6366F1);
+  font-weight: 600;
 }
 
 .blog-layout__body {
@@ -992,6 +1004,12 @@ a:focus-visible {
   cursor: pointer;
   font-family: var(--font-family, system-ui);
   border-radius: var(--border-radius-md, 8px);
+  transition: color 0.12s;
+}
+
+.landing-header__nav-item--active {
+  color: var(--color-text, #111827);
+  font-weight: 600;
 }
 
 .landing-header__actions {
@@ -1451,6 +1469,12 @@ a:focus-visible {
   cursor: pointer;
   font-family: var(--font-family, system-ui);
   border-radius: var(--border-radius-md, 8px);
+  transition: color 0.12s;
+}
+
+.portfolio-header__nav-item--active {
+  color: var(--color-text, #111827);
+  font-weight: 600;
 }
 
 .portfolio-btn {
@@ -2204,8 +2228,8 @@ details[open] .te-section__summary::after {
 
 .te-radius-preview {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 22px;
   background: #e5e7eb;
   border: 2px solid #9ca3af;
   transition: background 0.12s, border-color 0.12s;
@@ -2511,9 +2535,15 @@ details[open] .te-section__summary::after {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 4px 8px;
   font-family: inherit;
   transition: color 0.15s;
+  border-radius: var(--border-radius-sm, 4px);
+}
+
+.ecom-header__nav-link--active {
+  color: var(--color-text, #111827);
+  font-weight: 600;
 }
 
 .ecom-header__icon-btn {
@@ -3789,6 +3819,14 @@ details[open] .te-section__summary::after {
 }
 
 .mobile-app-header__logo { font-size: 1rem; }
+
+.mobile-app-header__page-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text, #111827);
+}
 
 .layout-tabs--mobile {
   flex: 1;

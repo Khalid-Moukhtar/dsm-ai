@@ -218,16 +218,21 @@ export function LandingLayout({ activePage, onPageChange }: Props) {
 
   return (
     <div className="landing-layout">
-      {/* Header */}
+      {/* Header — nav items are the page switcher */}
       <header className="landing-header">
         <div className="landing-header__brand">
           <div className="landing-header__logo" aria-hidden="true" />
           <span className="landing-header__name">ProductName</span>
         </div>
         <nav className="landing-header__nav">
-          {['Features', 'Pricing', 'Docs', 'Blog'].map(item => (
-            <button key={item} className="landing-header__nav-item" tabIndex={-1} aria-hidden="true">
-              {item}
+          {PAGES.map((page, i) => (
+            <button
+              key={page}
+              className={`landing-header__nav-item${activePage === i ? ' landing-header__nav-item--active' : ''}`}
+              onClick={() => onPageChange(i)}
+              tabIndex={-1}
+            >
+              {page}
             </button>
           ))}
         </nav>
@@ -240,22 +245,6 @@ export function LandingLayout({ activePage, onPageChange }: Props) {
           </button>
         </div>
       </header>
-
-      {/* Page tabs */}
-      <div className="layout-tabs" role="tablist" aria-label="Landing pages">
-        {PAGES.map((page, i) => (
-          <button
-            key={page}
-            role="tab"
-            aria-selected={activePage === i}
-            className={`layout-tab${activePage === i ? ' layout-tab--active' : ''}`}
-            onClick={() => onPageChange(i)}
-            tabIndex={-1}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
 
       <div role="tabpanel">
         <PageComponent />

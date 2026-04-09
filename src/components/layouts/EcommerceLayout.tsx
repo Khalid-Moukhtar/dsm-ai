@@ -232,42 +232,35 @@ export function EcommerceLayout({ activePage, onPageChange }: Props) {
 
   return (
     <div className="ecom-layout">
-      {/* Top nav */}
+      {/* Top nav — page names as primary nav */}
       <header className="ecom-header">
         <div className="ecom-header__brand">
           <span className="ecom-header__logo" aria-hidden="true">◉</span>
           <span className="ecom-header__name">Maison</span>
         </div>
         <div className="ecom-header__nav">
-          {['New', 'Sale', 'Men', 'Women'].map(item => (
-            <button key={item} className="ecom-header__nav-link" tabIndex={-1} aria-hidden="true">
-              {item}
+          {PAGES.map((page, i) => (
+            <button
+              key={page}
+              className={`ecom-header__nav-link${activePage === i ? ' ecom-header__nav-link--active' : ''}`}
+              onClick={() => onPageChange(i)}
+              tabIndex={-1}
+            >
+              {page}
             </button>
           ))}
         </div>
         <div className="ecom-header__actions">
           <button className="ecom-header__icon-btn" tabIndex={-1} aria-hidden="true">⊙</button>
-          <button className="ecom-header__icon-btn" tabIndex={-1} aria-hidden="true">
+          <button
+            className="ecom-header__icon-btn"
+            onClick={() => onPageChange(1)}
+            tabIndex={-1}
+          >
             ◫ 3
           </button>
         </div>
       </header>
-
-      {/* Page tabs */}
-      <div className="layout-tabs" role="tablist" aria-label="Shop pages">
-        {PAGES.map((page, i) => (
-          <button
-            key={page}
-            role="tab"
-            aria-selected={activePage === i}
-            className={`layout-tab${activePage === i ? ' layout-tab--active' : ''}`}
-            onClick={() => onPageChange(i)}
-            tabIndex={-1}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
 
       {/* Page content */}
       <div className="ecom-body" role="tabpanel">

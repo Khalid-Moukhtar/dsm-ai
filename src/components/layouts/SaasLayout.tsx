@@ -6,14 +6,13 @@ interface Props {
   onPageChange: (page: number) => void
 }
 
-const PAGES = ['Dashboard', 'Users', 'Settings']
-
+// page: null = decorative only; number = page index to navigate to
 const NAV_ITEMS = [
-  { icon: '⊞', label: 'Dashboard' },
-  { icon: '⊙', label: 'Analytics' },
-  { icon: '◫', label: 'Projects' },
-  { icon: '≡', label: 'Users' },
-  { icon: '◈', label: 'Settings' },
+  { icon: '⊞', label: 'Dashboard', page: 0 },
+  { icon: '⊙', label: 'Analytics', page: null },
+  { icon: '◫', label: 'Projects',  page: null },
+  { icon: '≡', label: 'Users',     page: 1 },
+  { icon: '◈', label: 'Settings',  page: 2 },
 ]
 
 const STATS = [
@@ -167,9 +166,9 @@ export function SaasLayout({ activePage, onPageChange }: Props) {
           {NAV_ITEMS.map(item => (
             <button
               key={item.label}
-              className="saas-sidebar__nav-item"
+              className={`saas-sidebar__nav-item${item.page === activePage ? ' saas-sidebar__nav-item--active' : ''}`}
+              onClick={item.page !== null ? () => onPageChange(item.page as number) : undefined}
               tabIndex={-1}
-              aria-hidden="true"
             >
               <span aria-hidden="true">{item.icon}</span>
               {item.label}
@@ -187,21 +186,6 @@ export function SaasLayout({ activePage, onPageChange }: Props) {
 
       {/* Main content */}
       <div className="saas-content">
-        {/* Page tab bar */}
-        <div className="layout-tabs" role="tablist" aria-label="Dashboard pages">
-          {PAGES.map((page, i) => (
-            <button
-              key={page}
-              role="tab"
-              aria-selected={activePage === i}
-              className={`layout-tab${activePage === i ? ' layout-tab--active' : ''}`}
-              onClick={() => onPageChange(i)}
-              tabIndex={-1}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
         <div role="tabpanel">
           <PageComponent />
         </div>

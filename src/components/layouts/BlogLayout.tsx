@@ -125,35 +125,24 @@ export function BlogLayout({ activePage, onPageChange }: Props) {
 
   return (
     <div className="blog-layout">
-      {/* Header */}
+      {/* Header — nav items are the page switcher */}
       <header className="blog-header">
         <div className="blog-header__brand">
           <span className="blog-header__title">The Craft</span>
         </div>
         <nav className="blog-header__nav">
-          {['Home', 'Articles', 'About', 'Newsletter'].map(item => (
-            <button key={item} className="blog-header__nav-item" tabIndex={-1} aria-hidden="true">
-              {item}
+          {PAGES.map((page, i) => (
+            <button
+              key={page}
+              className={`blog-header__nav-item${activePage === i ? ' blog-header__nav-item--active' : ''}`}
+              onClick={() => onPageChange(i)}
+              tabIndex={-1}
+            >
+              {page}
             </button>
           ))}
         </nav>
       </header>
-
-      {/* Page tabs */}
-      <div className="layout-tabs" role="tablist" aria-label="Blog pages">
-        {PAGES.map((page, i) => (
-          <button
-            key={page}
-            role="tab"
-            aria-selected={activePage === i}
-            className={`layout-tab${activePage === i ? ' layout-tab--active' : ''}`}
-            onClick={() => onPageChange(i)}
-            tabIndex={-1}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
 
       <div role="tabpanel">
         <PageComponent />
