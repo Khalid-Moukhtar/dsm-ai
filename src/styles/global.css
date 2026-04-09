@@ -128,10 +128,17 @@ a:focus-visible {
   gap: 0.625rem;
 }
 
+/* Wrapper divs (role="listitem") flex so .layout-card fills full cell height */
+.layout-gallery > div {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ================================================
    LAYOUT TYPE CARD
    ================================================ */
 .layout-card {
+  flex: 1;                /* fills the listitem div → all cards same height in row */
   background: #ffffff;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
@@ -142,6 +149,7 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* center content vertically within the uniform height */
   gap: 3px;
   min-height: 88px;
 }
