@@ -1,34 +1,89 @@
-import { useState, useCallback } from 'react'
-import type { Theme, ExportFormat, EditableSection } from '../types/theme'
-import { templates } from '../data/templates'
+import { useState, useCallback, useMemo } from 'react'
+import type {
+  Theme,
+  ExportFormat,
+  EditableSection,
+  LayoutType,
+  StyleVariant,
+  ColorMode,
+} from '../types/theme'
+import { VARIANTS, LAYOUT_TYPE_META } from '../data/variants'
 import { downloadTheme } from '../utils/export'
 
+// Overrides are user tweaks layered on top of the base variant values.
+type Overrides = { [K in EditableSection]?: Partial<Theme[K]> }
+
+// Derive a full Theme object from the three user selections + any overrides.
+// variant and colorMode are UI-state — they must NOT appear in export output.
+function computeTheme(
+  layoutType: LayoutType,
+  variant: StyleVariant,
+  colorMode: ColorMode,
+  overrides: Overrides,
+): Theme {
+  const def = VARIANTS[variant]
+  const baseColors = colorMode === 'light' ? def.lightColors : def.darkColors
+  return {
+    id: `${layoutType}-${variant}-${colorMode}`,
+    name: `${def.meta.label} — ${LAYOUT_TYPE_META[layoutType].label}`,
+    description: def.meta.description,
+    variant,
+    colorMode,
+    layoutType,
+    colors: { ...baseColors, ...(overrides.colors ?? {}) },
+    typography: { ...def.typography, ...(overrides.typography ?? {}) },
+    spacing: { ...def.spacing, ...(overrides.spacing ?? {}) },
+    borderRadius: { ...def.borderRadius, ...(overrides.borderRadius ?? {}) },
+  }
+}
+
 export interface UseThemeReturn {
-  themes: Theme[]
+  layoutType: LayoutType | null
+  variant: StyleVariant
+  colorMode: ColorMode
   selectedTheme: Theme | null
-  selectTemplate: (id: string) => void
+  setLayoutType: (layout: LayoutType) => void
+  setVariant: (v: StyleVariant) => void
+  setColorMode: (mode: ColorMode) => void
   updateSection: <K extends EditableSection>(section: K, patch: Partial<Theme[K]>) => void
   exportTheme: (format: ExportFormat) => void
-  resetToTemplate: () => void
+  resetToVariant: () => void
 }
 
 export function useTheme(): UseThemeReturn {
-  const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null)
+  const [layoutType, setLayoutTypeState] = useState<LayoutType | null>(null)
+  const [variant, setVariantState] = useState<StyleVariant>('stripe')
+  const [colorMode, setColorModeState] = useState<ColorMode>('light')
+  const [overrides, setOverrides] = useState<Overrides>({})
 
-  const selectTemplate = useCallback((id: string) => {
-    const template = templates.find(t => t.id === id) ?? null
-    setSelectedTheme(template)
+  const selectedTheme = useMemo(
+    () => (layoutType ? computeTheme(layoutType, variant, colorMode, overrides) : null),
+    [layoutType, variant, colorMode, overrides],
+  )
+
+  const setLayoutType = useCallback((layout: LayoutType) => {
+    setLayoutTypeState(layout)
+    // Keep variant/colorMode but reset token overrides when switching layout
+    setOverrides({})
+  }, [])
+
+  const setVariant = useCallback((v: StyleVariant) => {
+    setVariantState(v)
+    // Reset overrides when switching to a different brand variant
+    setOverrides({})
+  }, [])
+
+  const setColorMode = useCallback((mode: ColorMode) => {
+    setColorModeState(mode)
+    // Preserve overrides on light/dark toggle — user may have tweaked non-color tokens
   }, [])
 
   const updateSection = useCallback(
     <K extends EditableSection>(section: K, patch: Partial<Theme[K]>) => {
-      setSelectedTheme(prev => {
-        if (!prev) return prev
-        return {
-          ...prev,
-          [section]: { ...(prev[section] as object), ...patch },
-        } as Theme
-      })
+      setOverrides(prev => ({
+        ...prev,
+        [section]: { ...(prev[section] as object ?? {}), ...patch },
+      }))
     },
     [],
   )
@@ -41,18 +96,20 @@ export function useTheme(): UseThemeReturn {
     [selectedTheme],
   )
 
-  const resetToTemplate = useCallback(() => {
-    if (!selectedTheme) return
-    const original = templates.find(t => t.id === selectedTheme.id)
-    if (original) setSelectedTheme(original)
-  }, [selectedTheme])
+  const resetToVariant = useCallback(() => {
+    setOverrides({})
+  }, [])
 
   return {
-    themes: templates,
+    layoutType,
+    variant,
+    colorMode,
     selectedTheme,
-    selectTemplate,
+    setLayoutType,
+    setVariant,
+    setColorMode,
     updateSection,
     exportTheme,
-    resetToTemplate,
+    resetToVariant,
   }
 }

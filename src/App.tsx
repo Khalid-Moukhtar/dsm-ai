@@ -1,11 +1,23 @@
 import { useTheme } from './hooks/useTheme'
-import { TemplateGallery } from './components/TemplateGallery'
-import { ThemePreview } from './components/ThemePreview'
-import { ExportPanel } from './components/ExportPanel'
+import { LayoutGallery } from './components/LayoutGallery'
+import { LayoutPreview } from './components/LayoutPreview'
+import { TokenEditor } from './components/TokenEditor'
+import { ExportPreview } from './components/ExportPreview'
+import { STYLE_VARIANTS, VARIANTS } from './data/variants'
+import type { StyleVariant, ColorMode } from './types/theme'
 
 export default function App() {
-  const { themes, selectedTheme, selectTemplate, exportTheme, resetToTemplate } =
-    useTheme()
+  const {
+    layoutType,
+    variant,
+    colorMode,
+    selectedTheme,
+    setLayoutType,
+    setVariant,
+    setColorMode,
+    updateSection,
+    resetToVariant,
+  } = useTheme()
 
   return (
     <div className="app">
@@ -15,53 +27,103 @@ export default function App() {
             <span className="app-header__logo" aria-hidden="true">◈</span>
             <h1 className="app-header__title">DSM</h1>
           </div>
-          <p className="app-header__subtitle">
-            Pick a vibe. Export to AI.
-          </p>
+          <p className="app-header__subtitle">Pick a vibe. Export to AI.</p>
         </div>
       </header>
 
       <main className="app-main">
-        <section className="gallery-section" aria-label="Design system templates">
-          <h2 className="section-heading">Templates</h2>
-          <p className="section-subheading">
-            Select a template to preview it and export your design rules.
-          </p>
-          <TemplateGallery
-            themes={themes}
-            selectedId={selectedTheme?.id ?? null}
-            onSelect={selectTemplate}
+        {/* Layout type gallery — 8 cards */}
+        <section aria-label="Layout types">
+          <h2 className="section-heading">What are you building?</h2>
+          <LayoutGallery
+            selectedLayoutType={layoutType}
+            onSelect={setLayoutType}
           />
         </section>
 
+        {/* 3-column workspace — shown once a layout type is selected */}
         {selectedTheme && (
-          <section className="workspace-section" aria-label="Theme preview and export">
-            <div className="workspace">
-              <div className="workspace__preview">
-                <ThemePreview theme={selectedTheme} />
+          <section className="workspace" aria-label="Theme editor">
+            {/* Variant + mode controls bar */}
+            <div className="workspace-controls">
+              <div className="workspace-controls__group">
+                <label className="workspace-controls__label" htmlFor="variant-select">
+                  Style
+                </label>
+                <select
+                  id="variant-select"
+                  className="workspace-controls__select"
+                  value={variant}
+                  onChange={e => setVariant(e.target.value as StyleVariant)}
+                  aria-label="Select style variant"
+                >
+                  {STYLE_VARIANTS.map(v => (
+                    <option key={v} value={v}>
+                      {VARIANTS[v].meta.label} — {VARIANTS[v].meta.description}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="workspace__sidebar">
-                <ExportPanel
+
+              <div className="workspace-controls__group">
+                <span className="workspace-controls__label" aria-hidden="true">Mode</span>
+                <div className="mode-toggle" role="group" aria-label="Color mode">
+                  <button
+                    className={`mode-toggle__btn${colorMode === 'light' ? ' mode-toggle__btn--active' : ''}`}
+                    onClick={() => setColorMode('light' as ColorMode)}
+                    type="button"
+                    aria-pressed={colorMode === 'light'}
+                  >
+                    ☀ Light
+                  </button>
+                  <button
+                    className={`mode-toggle__btn${colorMode === 'dark' ? ' mode-toggle__btn--active' : ''}`}
+                    onClick={() => setColorMode('dark' as ColorMode)}
+                    type="button"
+                    aria-pressed={colorMode === 'dark'}
+                  >
+                    ☽ Dark
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 3-column layout */}
+            <div className="workspace__columns">
+              <div className="workspace__preview">
+                <LayoutPreview theme={selectedTheme} />
+              </div>
+              <div className="workspace__editor">
+                <TokenEditor
                   theme={selectedTheme}
-                  onExport={exportTheme}
-                  onReset={resetToTemplate}
+                  updateSection={updateSection}
+                  onReset={resetToVariant}
                 />
+              </div>
+              <div className="workspace__export">
+                <ExportPreview theme={selectedTheme} />
               </div>
             </div>
           </section>
+        )}
+
+        {!selectedTheme && (
+          <p className="app-empty-hint">
+            Select a layout type above to start.
+          </p>
         )}
       </main>
 
       <footer className="app-footer">
         <p>
           <a
-            href="https://github.com/k-sni/dsm-ai"
+            href="https://github.com/Khalid-Moukhtar/dsm-ai"
             target="_blank"
             rel="noopener noreferrer"
           >
             DSM on GitHub
-          </a>{' '}
-          · MIT License
+          </a>
+          {' '}· MIT License
         </p>
       </footer>
     </div>
