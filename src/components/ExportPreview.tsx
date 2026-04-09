@@ -1,4 +1,4 @@
-// Export preview — format tabs, live content preview, download button.
+// Export preview — format tabs, live content preview, copy + download buttons.
 // Tab state is local. Export string is memoized per theme + format.
 
 import { useState, useMemo } from 'react'
@@ -17,6 +17,7 @@ const FORMATS: { id: ExportFormat; label: string }[] = [
 
 export function ExportPreview({ theme }: Props) {
   const [activeFormat, setActiveFormat] = useState<ExportFormat>('markdown')
+  const [copied, setCopied] = useState(false)
 
   const exportString = useMemo(
     () => exportTheme(theme, activeFormat),
@@ -28,6 +29,12 @@ export function ExportPreview({ theme }: Props) {
 
   function handleDownload() {
     downloadTheme(theme, activeFormat)
+  }
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(exportString)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
   }
 
   const tabId = (format: ExportFormat) => `export-tab-${format}`
@@ -71,15 +78,25 @@ export function ExportPreview({ theme }: Props) {
         <pre className="export-preview__pre">{exportString}</pre>
       </div>
 
-      {/* Download */}
-      <button
-        className="export-download-btn"
-        onClick={handleDownload}
-        aria-label={`Download ${fileName}`}
-        type="button"
-      >
-        ↓ Download {fileName}
-      </button>
+      {/* Actions row */}
+      <div className="export-actions">
+        <button
+          className="export-copy-btn"
+          onClick={handleCopy}
+          type="button"
+          aria-label="Copy to clipboard"
+        >
+          {copied ? '✓ Copied!' : '⎘ Copy'}
+        </button>
+        <button
+          className="export-download-btn"
+          onClick={handleDownload}
+          aria-label={`Download ${fileName}`}
+          type="button"
+        >
+          ↓ Download
+        </button>
+      </div>
     </div>
   )
 }

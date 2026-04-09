@@ -15,6 +15,7 @@ export default function App() {
     setLayoutType,
     setVariant,
     setColorMode,
+    setName,
     updateSection,
     resetToVariant,
   } = useTheme()
@@ -63,6 +64,21 @@ export default function App() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="workspace-controls__group workspace-controls__group--name">
+                <label className="workspace-controls__label" htmlFor="theme-name-input">
+                  Name
+                </label>
+                <input
+                  id="theme-name-input"
+                  type="text"
+                  className="workspace-controls__name-input"
+                  value={selectedTheme.name}
+                  onChange={e => setName(e.target.value)}
+                  aria-label="Theme name"
+                  spellCheck={false}
+                />
               </div>
 
               <div className="workspace-controls__group">
