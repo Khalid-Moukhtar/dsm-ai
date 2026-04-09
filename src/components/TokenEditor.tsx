@@ -6,7 +6,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import type { Theme, EditableSection, ColorPalette } from '../types/theme'
-import { contrastRatio, passesWcagAA } from '../utils/contrast'
+import { contrastRatio, passesWcagAA, suggestPassingColor } from '../utils/contrast'
 
 export interface TokenEditorProps {
   theme: Theme
@@ -214,17 +214,34 @@ interface ContrastBadgeProps {
   label: string
   fg: string
   bg: string
+  /** Called with the suggested hex when the user clicks "Fix →" on a FAIL badge. */
+  onFix?: (hex: string) => void
 }
 
-function ContrastBadge({ label, fg, bg }: ContrastBadgeProps) {
+function ContrastBadge({ label, fg, bg, onFix }: ContrastBadgeProps) {
   const ratio = contrastRatio(fg, bg)
   const passes = ratio !== null && passesWcagAA(fg, bg)
+  const fix = !passes && onFix ? suggestPassingColor(fg, bg) : null
+
   return (
     <div className="te-contrast-row">
       <span className="te-contrast-label">{label}</span>
-      <span className={`te-contrast-badge${passes ? ' te-contrast-badge--pass' : ' te-contrast-badge--fail'}`}>
-        {ratio !== null ? `${ratio}:1` : 'N/A'} {passes ? '✓ AA' : '✗ FAIL'}
-      </span>
+      <div className="te-contrast-badge-wrap">
+        <span className={`te-contrast-badge${passes ? ' te-contrast-badge--pass' : ' te-contrast-badge--fail'}`}>
+          {ratio !== null ? `${ratio}:1` : 'N/A'} {passes ? '✓ AA' : '✗ FAIL'}
+        </span>
+        {fix && onFix && (
+          <button
+            className="te-contrast-fix-btn"
+            onClick={() => onFix(fix)}
+            type="button"
+            aria-label={`Auto-fix: change to ${fix}`}
+            title={`Nearest passing color: ${fix}`}
+          >
+            Fix →
+          </button>
+        )}
+      </div>
     </div>
   )
 }
@@ -352,9 +369,24 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
 
           <div className="te-contrast-summary">
             <p className="te-contrast-summary__title">WCAG AA Contrast</p>
-            <ContrastBadge label="Primary button" fg={colors.primaryForeground} bg={colors.primary} />
-            <ContrastBadge label="Body text"      fg={colors.text}              bg={colors.background} />
-            <ContrastBadge label="Muted text"     fg={colors.textMuted}         bg={colors.background} />
+            <ContrastBadge
+              label="Primary button"
+              fg={colors.primaryForeground}
+              bg={colors.primary}
+              onFix={hex => updateSection('colors', { primaryForeground: hex })}
+            />
+            <ContrastBadge
+              label="Body text"
+              fg={colors.text}
+              bg={colors.background}
+              onFix={hex => updateSection('colors', { text: hex })}
+            />
+            <ContrastBadge
+              label="Muted text"
+              fg={colors.textMuted}
+              bg={colors.background}
+              onFix={hex => updateSection('colors', { textMuted: hex })}
+            />
           </div>
         </div>
       </details>
