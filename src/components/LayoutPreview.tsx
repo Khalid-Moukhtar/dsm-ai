@@ -52,6 +52,7 @@ function LayoutPlaceholder({ layoutType, activePage, onPageChange }: Placeholder
 
 export function LayoutPreview({ theme }: Props) {
   const [activePage, setActivePage] = useState(0)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Reset page when layout type changes
   const prevLayoutType = useMemo(() => theme.layoutType, [theme.layoutType])
@@ -122,16 +123,26 @@ export function LayoutPreview({ theme }: Props) {
   const LayoutComponent = IMPLEMENTED[theme.layoutType]
 
   return (
-    // aria-hidden: decorative preview — ALL interactive elements inside must have tabIndex={-1}
     <div
-      className="layout-preview"
-      aria-hidden="true"
+      className={`layout-preview${isExpanded ? ' layout-preview--expanded' : ''}`}
       style={cssVars}
     >
-      <div className="layout-preview__label">
-        Live Preview — {theme.name}
+      {/* Header: label + expand button — NOT aria-hidden, keyboard accessible */}
+      <div className="layout-preview__header">
+        <span className="layout-preview__label">{theme.name}</span>
+        <button
+          className="layout-preview__expand-btn"
+          onClick={() => setIsExpanded(e => !e)}
+          type="button"
+          aria-label={isExpanded ? 'Collapse preview' : 'Expand preview'}
+          title={isExpanded ? 'Collapse' : 'Expand'}
+        >
+          {isExpanded ? '✕' : '⤢'}
+        </button>
       </div>
-      <div className="layout-preview__scene">
+
+      {/* Scene: decorative — ALL interactive elements inside must have tabIndex={-1} */}
+      <div className="layout-preview__scene" aria-hidden="true">
         {LayoutComponent
           ? <LayoutComponent activePage={activePage} onPageChange={setActivePage} />
           : <LayoutPlaceholder layoutType={theme.layoutType} activePage={activePage} onPageChange={setActivePage} />

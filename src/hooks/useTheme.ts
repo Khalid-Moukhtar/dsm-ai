@@ -45,6 +45,7 @@ export interface UseThemeReturn {
   setLayoutType: (layout: LayoutType) => void
   setVariant: (v: StyleVariant) => void
   setColorMode: (mode: ColorMode) => void
+  setName: (name: string) => void
   updateSection: <K extends EditableSection>(section: K, patch: Partial<Theme[K]>) => void
   exportTheme: (format: ExportFormat) => void
   resetToVariant: () => void
@@ -55,22 +56,30 @@ export function useTheme(): UseThemeReturn {
   const [variant, setVariantState] = useState<StyleVariant>('stripe')
   const [colorMode, setColorModeState] = useState<ColorMode>('light')
   const [overrides, setOverrides] = useState<Overrides>({})
+  const [nameOverride, setNameOverride] = useState<string | null>(null)
 
-  const selectedTheme = useMemo(
-    () => (layoutType ? computeTheme(layoutType, variant, colorMode, overrides) : null),
-    [layoutType, variant, colorMode, overrides],
-  )
+  const selectedTheme = useMemo(() => {
+    if (!layoutType) return null
+    const t = computeTheme(layoutType, variant, colorMode, overrides)
+    return nameOverride !== null ? { ...t, name: nameOverride } : t
+  }, [layoutType, variant, colorMode, overrides, nameOverride])
 
   const setLayoutType = useCallback((layout: LayoutType) => {
     setLayoutTypeState(layout)
-    // Keep variant/colorMode but reset token overrides when switching layout
+    // Keep variant/colorMode but reset token overrides and name when switching layout
     setOverrides({})
+    setNameOverride(null)
   }, [])
 
   const setVariant = useCallback((v: StyleVariant) => {
     setVariantState(v)
-    // Reset overrides when switching to a different brand variant
+    // Reset overrides and name when switching to a different brand variant
     setOverrides({})
+    setNameOverride(null)
+  }, [])
+
+  const setName = useCallback((name: string) => {
+    setNameOverride(name)
   }, [])
 
   const setColorMode = useCallback((mode: ColorMode) => {
@@ -108,6 +117,7 @@ export function useTheme(): UseThemeReturn {
     setLayoutType,
     setVariant,
     setColorMode,
+    setName,
     updateSection,
     exportTheme,
     resetToVariant,
