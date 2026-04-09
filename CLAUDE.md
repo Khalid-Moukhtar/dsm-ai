@@ -13,8 +13,11 @@
 6. **Use pnpm** — never npm, yarn, or bun
 7. **NEVER run the full test suite** — run only specific test files by exact path
 8. **Vanilla CSS only** — no CSS-in-JS, no Tailwind, no styled-components
-9. **No backend** — this is 100% client-side. Never introduce server-side logic or external API calls.
+9. **No backend** — this is 100% client-side. Never introduce server-side logic or external API calls (Google Fonts CDN is the one allowed exception).
 10. **Export format integrity** — ALL export formats (MD, JSON, CSS) must match the Data Map field names exactly
+11. **CALL BS** — if a product decision, architectural choice, or requirement is wrong, incoherent, or will lead the product in the wrong direction, say so directly and immediately. Do not implement something you know is wrong just because it was requested. Explain the issue, propose the correct alternative. This is a standing rule with the same weight as "never guess."
+12. **Non-designer mandate** — EVERY UI control for non-color tokens must use semantic controls (sliders, presets, dropdowns), not raw CSS value inputs. Non-designers do not know what "16px", "1.5", or "0em" mean. See docs/DOMAIN.md "Non-Designer UX Mandate" for the full spec. Never revert to freeform text inputs for spacing, radius, or typography tokens.
+13. **Google Fonts allowed** — the tool is online-first. Google Fonts CDN may be used for typography in layout previews and as exported font stacks in templates. No other external runtime dependencies.
 
 ## Canonical Workflows
 
@@ -35,6 +38,7 @@ Before marking any task done, verify:
 - [ ] No TypeScript errors (`pnpm exec tsc --noEmit` exits 0)
 - [ ] No lint warnings (`pnpm run lint` exits 0 with --max-warnings 0)
 - [ ] Vite build succeeds (`pnpm run build` exits 0)
+- [ ] `pnpm audit` — no CRITICAL or HIGH CVEs
 - [ ] Export output tested — generated MD/JSON/CSS is valid and matches Data Map field names
 - [ ] Color contrast: all template defaults meet WCAG AA (4.5:1 for text, 3:1 for large text)
 - [ ] No hardcoded design values outside of `src/data/templates.ts`
@@ -81,8 +85,17 @@ Before marking any task done, verify:
 
 ### Security
 - **Security Threat Model is mandatory for every new feature** — answer the 6 questions in `/feature` Step 2 before writing code. Document answers in the plan.
-- **CSS injection risk**: User-tweaked token values (colors, font families, sizes) injected as CSS custom properties MUST be validated before use. An unescaped value like `red; --color-text: red` breaks the preview. Always validate hex format (`/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/`) before applying.
-- **Prompt injection risk in exports**: DSM exports Markdown consumed by AI agents. String tokens (especially `fontFamily`, template `description`) must not be user-free-text that could inject instructions. Validate or sanitize any user-supplied string before it appears in the MD export.
+- **React does NOT sanitize CSS custom property values.** Values in `style={{ '--color-primary': val }}` go verbatim to the DOM. The `TokenEditor` validation layer is the SOLE defense. Treat it as mandatory, not optional UX.
+- **CSS injection risk — validation rules by token type**:
+  - Hex colors: `/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/` — reject and keep last valid on failure
+  - Spacing / radius / font-size: `/^\d+(\.\d+)?(px|rem|em|%)$/` — reject on failure
+  - Font weight: `/^\d{3}$/` — reject on failure
+  - Line height: `/^\d+(\.\d+)?$/` — reject on failure
+  - Letter spacing: `/^-?\d+(\.\d+)?(px|em|rem)$/` — reject on failure
+  - **Font family — allowlist ONLY**: `/^[a-zA-Z0-9 ,\-_.']+$/` max 100 chars. Use literal space `[ ]`, NOT `\s` — `\s` matches `\n` which is an injection vector. Do NOT use a strip list (misses `@`, `(`, `)`, `/`, `*`). Reject and revert on failure.
+- **Initial template values are the trust boundary.** Template values in `templates.ts` bypass `TokenEditor` validation. Every string in `templates.ts` must be manually verified as clean. The file has a security comment to this effect.
+- **Prompt injection risk in exports**: DSM exports Markdown consumed by AI agents. `fontFamily` (user-editable) must pass the allowlist before appearing in MD or CSS exports. Fall back to `'system-ui'` if it fails at export time. `JSON.stringify` handles escaping for JSON — no additional sanitization needed there.
+- **Color picker `onChange` MUST be debounced**: Use `useRef` to hold the `setTimeout` timer (80ms). Clear in `useEffect` cleanup to prevent post-unmount state updates. Do NOT call `updateSection` on every color picker pixel — use debounce or `startTransition`.
 - **Download filename**: NEVER derive the download filename from user input. Use hardcoded names only (`design_rules.md`, `design_tokens.json`, `variables.css`).
 - **Dependency discipline**: Prefer zero new dependencies for utility functions (hex validation, contrast math are simple enough inline). When adding any dependency, run `pnpm audit` and check for CRITICAL/HIGH CVEs before merge.
 - **No network requests**: DSM is offline-first. Any `fetch()`, `XMLHttpRequest`, or external URL reference is a flag — get explicit approval before adding it.
@@ -97,6 +110,8 @@ Before marking any task done, verify:
 - **No prop drilling beyond 2 levels** — lift state to a React context if needed
 - **`useCallback`/`useMemo`** for expensive computations (e.g., contrast ratio calculations)
 - **No effects for derived state** — compute from existing state directly
+- **`TokenEditor` must NOT call `useTheme()` directly** — it receives `theme` and `updateSection` as props from `App`. Calling `useTheme()` inside `TokenEditor` would create isolated state disconnected from `LayoutPreview`.
+- **Tab state is always local** — `LayoutPreview` page tabs and `ExportPreview` format tabs use local `useState`. Never lift tab state to `App`.
 
 ## Project Structure
 
@@ -129,10 +144,21 @@ dsm-ai/
 │   ├── types/
 │   │   └── theme.ts                  # TypeScript types (must match Data Map)
 │   ├── data/
-│   │   └── templates.ts              # Built-in design system templates
-│   ├── components/                   # React UI components
+│   │   └── templates.ts              # Built-in design system templates (SECURITY: values are trust boundary)
+│   ├── components/
+│   │   ├── TemplateGallery.tsx       # Horizontal scroll strip of template cards
+│   │   ├── TemplateCard.tsx          # Individual card with layout type badge
+│   │   ├── LayoutPreview.tsx         # CSS var injector + layout dispatcher (aria-hidden)
+│   │   ├── TokenEditor.tsx           # Token editor (validation, debounce, WCAG contrast)
+│   │   ├── ExportPreview.tsx         # Export file preview + download
+│   │   └── layouts/
+│   │       ├── SaasLayout.tsx        # SaaS dashboard mockup (tabIndex={-1} on all interactive)
+│   │       ├── BlogLayout.tsx        # Blog/content site mockup
+│   │       ├── LandingLayout.tsx     # Landing page mockup
+│   │       └── PortfolioLayout.tsx   # Portfolio site mockup
 │   ├── hooks/                        # Custom React hooks
 │   ├── utils/
+│   │   ├── contrast.ts               # WCAG 2.1 contrast math
 │   │   └── export.ts                 # MD/JSON/CSS export utilities
 │   └── styles/
 │       └── global.css                # Global CSS + CSS custom properties
@@ -146,6 +172,8 @@ dsm-ai/
 ## Warnings
 
 - **No server**: Any feature requiring a backend server is out of scope. Export = client-side file download only.
-- **No external API calls**: The app works fully offline. No fetching remote data at runtime.
+- **Google Fonts is the only allowed external CDN**: Any other `fetch()`, `XMLHttpRequest`, or external URL reference needs explicit approval.
 - **Community contributors**: This is open source. Do not merge PRs that bypass the skill workflows or skip CI.
 - **Contrast checker**: Do not use third-party contrast libraries unless vetted — the calculation is simple enough to implement inline (WCAG formula uses relative luminance).
+- **Template hierarchy**: Layout type ≠ color scheme. "Dark mode" is a toggle, not a template. "Glassmorphism" is a style variant, not a layout. Never conflate these axes. See docs/DOMAIN.md for the canonical template hierarchy.
+- **Non-designer controls**: Never add freeform text inputs for spacing, radius, typography, or any non-color token. The user cannot evaluate raw CSS values. Use sliders, steppers, and presets. See docs/DOMAIN.md Non-Designer UX Mandate.

@@ -6,7 +6,7 @@
 
 | Role | Description | Default Access Level |
 |------|-------------|---------------------|
-| Developer | Vibe Coder or AI Developer using DSM to pick and export a design system | Full access to all tool functionality |
+| Builder | Vibe coder, builder, or non-designer starting a new app who needs a visual design system to hand to their AI coding agent. No design background. Needs to see realistic layouts to know what they want. | Full access to all tool functionality |
 
 There is no authentication. DSM is a public, unauthenticated, single-role tool.
 All visitors are treated as "Developer" with identical access.

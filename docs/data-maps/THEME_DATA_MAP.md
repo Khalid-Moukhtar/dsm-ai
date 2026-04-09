@@ -16,7 +16,8 @@ The top-level entity. One Theme = one complete design system configuration.
 | id | string | yes | static data file | Unique slug, e.g. `"modern-saas"` |
 | name | string | yes | static data file | Display name, e.g. `"Modern SaaS"` |
 | description | string | yes | static data file | 1-sentence description shown in gallery card |
-| category | `"modern" \| "corporate" \| "dark" \| "glassmorphism"` | yes | static data file | Template category for filtering |
+| category | `"modern" \| "corporate" \| "dark" \| "glassmorphism"` | yes | static data file | Template category |
+| layoutType | `"saas" \| "blog" \| "landing" \| "portfolio"` | yes | static data file | **UI-routing only — excluded from all export formats.** Determines which layout component is rendered in the preview. |
 | colors | ColorPalette | yes | static / user tweaks | See ColorPalette below |
 | typography | Typography | yes | static / user tweaks | See Typography below |
 | spacing | SpacingScale | yes | static / user tweaks | See SpacingScale below |
@@ -114,6 +115,8 @@ Generated on demand when the user clicks Export. Never persisted.
 |-------|-------------|----------|-------------|
 | Primary color | `color_primary` | `color_primary` | `--color-primary` |
 | Primary foreground | `color_primary_foreground` | `color_primary_foreground` | `--color-primary-foreground` |
+| Secondary color | `color_secondary` | `color_secondary` | `--color-secondary` |
+| Secondary foreground | `color_secondary_foreground` | `color_secondary_foreground` | `--color-secondary-foreground` |
 | Background | `color_background` | `color_background` | `--color-background` |
 | Surface | `color_surface` | `color_surface` | `--color-surface` |
 | Text | `color_text` | `color_text` | `--color-text` |
@@ -149,6 +152,9 @@ Generated on demand when the user clicks Export. Never persisted.
 | Border radius xl | `border_radius_xl` | `border_radius_xl` | `--border-radius-xl` |
 | Border radius full | `border_radius_full` | `border_radius_full` | `--border-radius-full` |
 
+> **Note**: `layoutType` is intentionally excluded from all export formats. It is a UI-routing field only.
+> **Note**: The Markdown export includes an AI-agent framing header (blockquote + `---`) prepended before the token table. JSON and CSS exports are format-pure — no header.
+
 **Status**: Stateless — generated once on demand, never stored
 
 ---
@@ -162,13 +168,15 @@ src/data/templates.ts (static array of Theme objects)
     ↓
 App loads → TemplateGallery renders cards for each template
     ↓
-User selects template → selectedTheme state updated (React useState)
+User selects template → selectedTheme state updated (React useState in useTheme hook)
     ↓
-ThemePreview re-renders with new theme values (CSS vars injected into :root)
+LayoutPreview re-renders: injects all CSS custom properties into scoped container
+    → dispatches to SaasLayout / BlogLayout / LandingLayout / PortfolioLayout
+       based on theme.layoutType
     ↓
-User optionally tweaks a token value → local state updated, preview re-renders live
+User tweaks a token in TokenEditor → updateSection() called → state updated → LayoutPreview re-renders live
     ↓
-User clicks Export → selects format (MD / JSON / CSS)
+User clicks Export → selects format (MD / JSON / CSS) in ExportPreview
     ↓
 exportTheme(theme, format) in src/utils/export.ts → generates content string
     ↓
@@ -182,9 +190,9 @@ Browser: new Blob([content]) → URL.createObjectURL → <a download> click → 
 **Error cases**:
 | Scenario | Handling |
 |----------|----------|
-| Invalid hex color entered during tweak | Show inline validation error on the input; disable export button until resolved |
-| Contrast ratio below WCAG AA | Show contrast warning badge on preview; do NOT block export |
-| No template selected (initial state) | Export button is disabled; show "Select a template to export" tooltip |
+| Invalid value entered in TokenEditor | Inline validation error on input; revert to last valid value on blur; invalid values never enter state |
+| Contrast ratio below WCAG AA | Show contrast warning badge in TokenEditor Colors section; do NOT block export |
+| No template selected (initial state) | Workspace (LayoutPreview + TokenEditor + ExportPreview) hidden; only gallery strip shown |
 
 ---
 
@@ -192,22 +200,22 @@ Browser: new Blob([content]) → URL.createObjectURL → <a download> click → 
 
 | Component / Hook | File | Fields Used | Notes |
 |-----------------|------|-------------|-------|
-| `TemplateGallery` | `src/components/TemplateGallery.tsx` | `id, name, description, category` | Shows grid of clickable template cards |
-| `ThemePreview` | `src/components/ThemePreview.tsx` | All Theme fields | Injects tokens as CSS custom properties; renders live component examples |
-| `ColorEditor` | `src/components/ColorEditor.tsx` | `colors.*` | Color picker inputs for tweaking palette |
-| `TypographyEditor` | `src/components/TypographyEditor.tsx` | `typography.*` | Inputs for font family, sizes, weights |
-| `SpacingEditor` | `src/components/SpacingEditor.tsx` | `spacing.*` | Slider/input controls for spacing scale |
-| `BorderRadiusEditor` | `src/components/BorderRadiusEditor.tsx` | `borderRadius.*` | Slider/input controls for radius values |
-| `ExportPanel` | `src/components/ExportPanel.tsx` | All Theme fields | Format selector + download trigger |
-| `ContrastBadge` | `src/components/ContrastBadge.tsx` | `colors.primary, colors.primaryForeground` | Displays WCAG contrast ratio |
-| `useTheme` | `src/hooks/useTheme.ts` | All Theme fields | Central state hook: selectedTheme, setTheme, tweakToken |
+| `TemplateGallery` | `src/components/TemplateGallery.tsx` | `id, name, description, category, layoutType` | Shows horizontal strip of clickable template cards |
+| `TemplateCard` | `src/components/TemplateCard.tsx` | `id, name, description, category, layoutType` | Individual card with layout type badge |
+| `LayoutPreview` | `src/components/LayoutPreview.tsx` | All token fields + `layoutType` | Injects tokens as CSS custom properties; dispatches to correct layout component |
+| `SaasLayout` | `src/components/layouts/SaasLayout.tsx` | CSS vars via container | Renders polished SaaS dashboard mockup |
+| `BlogLayout` | `src/components/layouts/BlogLayout.tsx` | CSS vars via container | Renders polished blog/content site mockup |
+| `LandingLayout` | `src/components/layouts/LandingLayout.tsx` | CSS vars via container | Renders polished landing page mockup |
+| `PortfolioLayout` | `src/components/layouts/PortfolioLayout.tsx` | CSS vars via container | Renders polished portfolio site mockup |
+| `TokenEditor` | `src/components/TokenEditor.tsx` | All token fields (read + mutate) | Color pickers + text inputs; calls `updateSection`; shows WCAG contrast badges |
+| `ExportPreview` | `src/components/ExportPreview.tsx` | All token fields (read) | Shows export file content inline; triggers download |
+| `useTheme` | `src/hooks/useTheme.ts` | All Theme fields | Central state hook: `selectedTheme`, `selectTemplate`, `updateSection`, `resetToTemplate`, `exportTheme` |
 
 ---
 
 ## Known Inconsistencies
 
-None yet. This section will be populated as bugs are discovered.
-
 | Issue | Severity | Status | Found | Notes |
 |-------|----------|--------|-------|-------|
-| — | — | — | — | — |
+| `layoutType` field exists in Theme type but is excluded from all export formats | intentional | by design | 2026-04-09 | UI-routing field only. The `toHaveLength(38)` test in `export.test.ts` enforces this — do not add `layoutType` to `toJson()`. |
+| AI-agent framing header in MD export only | intentional | by design | 2026-04-09 | JSON and CSS exports are format-pure. The header is MD-only because MD is the AI-prompt format. |
