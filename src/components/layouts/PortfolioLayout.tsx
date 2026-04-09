@@ -6,8 +6,6 @@ interface Props {
   onPageChange: (page: number) => void
 }
 
-const PAGES = ['Home', 'Projects', 'Contact']
-
 const PROJECTS = [
   {
     title: 'Orbit Design System',
@@ -206,20 +204,28 @@ function ContactPage() {
 
 const PAGE_COMPONENTS = [HomePage, ProjectsPage, ContactPage]
 
+// Nav labels → page mapping: Work=0(Home), Projects=1, Contact=2
+const NAV_ITEMS = ['Work', 'Projects', 'Contact']
+
 export function PortfolioLayout({ activePage, onPageChange }: Props) {
   const PageComponent = PAGE_COMPONENTS[activePage] ?? HomePage
 
   return (
     <div className="portfolio-layout">
-      {/* Header */}
+      {/* Header — nav items are the page switcher */}
       <header className="portfolio-header">
         <div className="portfolio-header__brand">
           <div className="portfolio-header__avatar" aria-hidden="true">A</div>
           <span className="portfolio-header__name">Alex Rivera</span>
         </div>
         <nav className="portfolio-header__nav">
-          {['Work', 'About', 'Blog', 'Contact'].map(item => (
-            <button key={item} className="portfolio-header__nav-item" tabIndex={-1} aria-hidden="true">
+          {NAV_ITEMS.map((item, i) => (
+            <button
+              key={item}
+              className={`portfolio-header__nav-item${activePage === i ? ' portfolio-header__nav-item--active' : ''}`}
+              onClick={() => onPageChange(i)}
+              tabIndex={-1}
+            >
               {item}
             </button>
           ))}
@@ -228,22 +234,6 @@ export function PortfolioLayout({ activePage, onPageChange }: Props) {
           Hire me
         </button>
       </header>
-
-      {/* Page tabs */}
-      <div className="layout-tabs" role="tablist" aria-label="Portfolio pages">
-        {PAGES.map((page, i) => (
-          <button
-            key={page}
-            role="tab"
-            aria-selected={activePage === i}
-            className={`layout-tab${activePage === i ? ' layout-tab--active' : ''}`}
-            onClick={() => onPageChange(i)}
-            tabIndex={-1}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
 
       <div role="tabpanel">
         <PageComponent />

@@ -61,12 +61,13 @@ const STORIES = [
   { name: 'Jin', avatar: 'J', color: '#C4C4E8', hasStory: false },
 ]
 
+// page: null = decorative; number = page index to navigate to
 const BOTTOM_NAV = [
-  { icon: '⊞', label: 'Home', active: true },
-  { icon: '⊙', label: 'Search', active: false },
-  { icon: '+', label: 'Create', active: false },
-  { icon: '◫', label: 'Activity', active: false },
-  { icon: '◑', label: 'Profile', active: false },
+  { icon: '⊞', label: 'Home',     page: 0 },
+  { icon: '⊙', label: 'Browse',   page: 1 },
+  { icon: '+', label: 'Create',   page: null },
+  { icon: '◫', label: 'Activity', page: null },
+  { icon: '◑', label: 'Profile',  page: 2 },
 ]
 
 function HomePage() {
@@ -254,23 +255,10 @@ export function MobileLayout({ activePage, onPageChange }: Props) {
           </div>
         </div>
 
-        {/* App header */}
+        {/* App header — title shows current page; nav via bottom bar */}
         <div className="mobile-app-header">
           <span className="mobile-app-header__logo" aria-hidden="true">◈</span>
-          <div className="layout-tabs layout-tabs--mobile" role="tablist" aria-label="Mobile pages">
-            {PAGES.map((page, i) => (
-              <button
-                key={page}
-                role="tab"
-                aria-selected={activePage === i}
-                className={`layout-tab${activePage === i ? ' layout-tab--active' : ''}`}
-                onClick={() => onPageChange(i)}
-                tabIndex={-1}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
+          <span className="mobile-app-header__page-title">{PAGES[activePage]}</span>
           <button className="mobile-app-header__action" tabIndex={-1} aria-hidden="true">◫</button>
         </div>
 
@@ -279,12 +267,13 @@ export function MobileLayout({ activePage, onPageChange }: Props) {
           <PageComponent />
         </div>
 
-        {/* Bottom nav */}
-        <nav className="mobile-bottom-nav" aria-hidden="true">
+        {/* Bottom nav — primary page navigation */}
+        <nav className="mobile-bottom-nav">
           {BOTTOM_NAV.map(item => (
             <button
               key={item.label}
-              className={`mobile-bottom-nav__item${item.active ? ' mobile-bottom-nav__item--active' : ''}`}
+              className={`mobile-bottom-nav__item${item.page === activePage ? ' mobile-bottom-nav__item--active' : ''}`}
+              onClick={item.page !== null ? () => onPageChange(item.page as number) : undefined}
               tabIndex={-1}
             >
               <span className="mobile-bottom-nav__icon">{item.icon}</span>
