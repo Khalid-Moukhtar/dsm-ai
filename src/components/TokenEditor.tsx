@@ -352,18 +352,30 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
       <details className="te-section" open>
         <summary className="te-section__summary">Colors</summary>
         <div className="te-section__body">
-          <ColorRow id="color-primary"    label="Primary"      value={colors.primary}           onChange={setColor('primary')} />
-          <ColorRow id="color-primary-fg" label="Primary text" value={colors.primaryForeground} onChange={setColor('primaryForeground')} />
-          <ColorRow id="color-secondary"  label="Secondary"    value={colors.secondary}         onChange={setColor('secondary')} />
-          <ColorRow id="color-background" label="Background"   value={colors.background}        onChange={setColor('background')} />
-          <ColorRow id="color-surface"    label="Surface"      value={colors.surface}           onChange={setColor('surface')} />
-          <ColorRow id="color-text"       label="Body text"    value={colors.text}              onChange={setColor('text')} />
-          <ColorRow id="color-text-muted" label="Muted text"   value={colors.textMuted}         onChange={setColor('textMuted')} />
-          <ColorRow id="color-border"     label="Border"       value={colors.border}            onChange={setColor('border')} />
-          <ColorRow id="color-accent"     label="Accent"       value={colors.accent}            onChange={setColor('accent')} />
-          <ColorRow id="color-error"      label="Error"        value={colors.error}             onChange={setColor('error')} />
-          <ColorRow id="color-success"    label="Success"      value={colors.success}           onChange={setColor('success')} />
-          <ColorRow id="color-warning"    label="Warning"      value={colors.warning}           onChange={setColor('warning')} />
+          <div className="te-color-group">
+            <p className="te-color-group__label">Brand</p>
+            <ColorRow id="color-primary"    label="Primary"      value={colors.primary}           onChange={setColor('primary')} />
+            <ColorRow id="color-primary-fg" label="Primary text" value={colors.primaryForeground} onChange={setColor('primaryForeground')} />
+            <ColorRow id="color-secondary"  label="Secondary"    value={colors.secondary}         onChange={setColor('secondary')} />
+          </div>
+          <div className="te-color-group">
+            <p className="te-color-group__label">Canvas</p>
+            <ColorRow id="color-background" label="Background"   value={colors.background}        onChange={setColor('background')} />
+            <ColorRow id="color-surface"    label="Surface"      value={colors.surface}           onChange={setColor('surface')} />
+            <ColorRow id="color-border"     label="Border"       value={colors.border}            onChange={setColor('border')} />
+          </div>
+          <div className="te-color-group">
+            <p className="te-color-group__label">Text</p>
+            <ColorRow id="color-text"       label="Body text"    value={colors.text}              onChange={setColor('text')} />
+            <ColorRow id="color-text-muted" label="Muted text"   value={colors.textMuted}         onChange={setColor('textMuted')} />
+          </div>
+          <div className="te-color-group">
+            <p className="te-color-group__label">Accents</p>
+            <ColorRow id="color-accent"     label="Accent"       value={colors.accent}            onChange={setColor('accent')} />
+            <ColorRow id="color-error"      label="Error"        value={colors.error}             onChange={setColor('error')} />
+            <ColorRow id="color-success"    label="Success"      value={colors.success}           onChange={setColor('success')} />
+            <ColorRow id="color-warning"    label="Warning"      value={colors.warning}           onChange={setColor('warning')} />
+          </div>
 
           <div className="te-contrast-summary">
             <p className="te-contrast-summary__title">WCAG AA Contrast</p>
