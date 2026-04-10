@@ -355,6 +355,10 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
+.variant-card--custom {
+  border-style: dashed;
+}
+
 .variant-card--selected {
   border-color: #6366F1;
   background: #f5f3ff;

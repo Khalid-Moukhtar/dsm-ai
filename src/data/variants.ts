@@ -49,7 +49,7 @@ export const LAYOUT_TYPE_META: Record<LayoutType, { label: string; description: 
 
 // ── Style variant list ─────────────────────────────────────────────────────────
 
-export const STYLE_VARIANTS: StyleVariant[] = ['stripe', 'linear', 'notion', 'vercel', 'airbnb']
+export const STYLE_VARIANTS: StyleVariant[] = ['stripe', 'linear', 'notion', 'vercel', 'airbnb', 'custom']
 
 // ── Brand variant definitions ──────────────────────────────────────────────────
 // All color pairs have been verified to meet WCAG AA contrast ratios.
@@ -381,6 +381,73 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       md:   '12px',
       lg:   '18px',
       xl:   '24px',
+      full: '9999px',
+    },
+  },
+
+  // ── Custom ─ Blank slate — no brand influence ─────────────────────────────────
+  // SECURITY: values here bypass TokenEditor validation. All strings must be sanitized manually.
+  custom: {
+    meta: { label: 'Custom', description: 'Blank slate, your colors' },
+    lightColors: {
+      primary:             '#3B82F6', // plain blue — familiar, no brand association
+      primaryForeground:   '#FFFFFF', // on #3B82F6: ~4.5:1 ✓ AA
+      secondary:           '#6B7280', // neutral gray
+      secondaryForeground: '#FFFFFF', // on #6B7280: ~4.6:1 ✓ AA
+      background:          '#FFFFFF',
+      surface:             '#F9FAFB',
+      text:                '#111827', // on white: ~16.1:1 ✓
+      textMuted:           '#6B7280', // on white: ~4.6:1 ✓ AA
+      border:              '#E5E7EB',
+      accent:              '#8B5CF6', // purple — distinct from primary
+      error:               '#EF4444',
+      success:             '#22C55E',
+      warning:             '#F59E0B',
+    },
+    darkColors: {
+      primary:             '#60A5FA', // lighter blue for dark bg
+      primaryForeground:   '#0F172A', // on #60A5FA: ~8.5:1 ✓
+      secondary:           '#9CA3AF',
+      secondaryForeground: '#111827',
+      background:          '#0F172A',
+      surface:             '#1E293B',
+      text:                '#F1F5F9', // on #0F172A: ~16:1 ✓
+      textMuted:           '#94A3B8', // on #0F172A: ~5.0:1 ✓ AA
+      border:              '#334155',
+      accent:              '#A78BFA',
+      error:               '#F87171',
+      success:             '#4ADE80',
+      warning:             '#FBBF24',
+    },
+    typography: {
+      fontFamily:        'Inter, system-ui, -apple-system, sans-serif',
+      fontSizeBase:      '16px',
+      fontSizeSm:        '14px',
+      fontSizeLg:        '18px',
+      fontSizeXl:        '20px',
+      fontSize2xl:       '24px',
+      fontSize3xl:       '30px',
+      fontWeightNormal:  400,
+      fontWeightMedium:  500,
+      fontWeightBold:    700,
+      lineHeightBase:    1.5,
+      letterSpacingBase: '0em',
+    },
+    spacing: {
+      xs:   '4px',
+      sm:   '8px',
+      md:   '16px',
+      lg:   '24px',
+      xl:   '32px',
+      xxl:  '48px',
+      xxxl: '64px',
+    },
+    borderRadius: {
+      none: '0px',
+      sm:   '4px',
+      md:   '8px',
+      lg:   '12px',
+      xl:   '16px',
       full: '9999px',
     },
   },

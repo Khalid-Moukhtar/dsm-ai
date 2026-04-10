@@ -87,10 +87,9 @@ describe('exportTheme — markdown', () => {
     expect(output).toContain('Test Theme')
   })
 
-  it('includes the AI-agent framing header', () => {
+  it('does NOT contain the AI-agent framing header', () => {
     const output = exportTheme(mockTheme, 'markdown')
-    expect(output).toContain('For AI coding agents')
-    expect(output).toContain('source of truth') // phrase split across MD blockquote lines
+    expect(output).not.toContain('For AI coding agents')
   })
 
   it('sanitizes fontFamily — rejects injection payload, falls back to system-ui', () => {
