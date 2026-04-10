@@ -96,7 +96,7 @@ Before marking any task done, verify:
 - **Initial variant values are the trust boundary.** Variant values in `variants.ts` bypass `TokenEditor` validation. Every string in `variants.ts` must be manually verified as clean. The file has a security comment to this effect.
 - **Prompt injection risk in exports**: DSM exports Markdown consumed by AI agents. `fontFamily` (user-editable) must pass the allowlist before appearing in MD or CSS exports. Fall back to `'system-ui'` if it fails at export time. `JSON.stringify` handles escaping for JSON — no additional sanitization needed there.
 - **Color picker `onChange` MUST be debounced**: Use `useRef` to hold the `setTimeout` timer (80ms). Clear in `useEffect` cleanup to prevent post-unmount state updates. Do NOT call `updateSection` on every color picker pixel — use debounce or `startTransition`.
-- **Download filename**: NEVER derive the download filename from user input. Use hardcoded names only (`design_rules.md`, `design_tokens.json`, `variables.css`).
+- **Download filename**: NEVER derive the download filename from user input. Use hardcoded names only (`design_rules.md`, `design_tokens.json`, `variables.css`, `tailwind.config.js`, `theme.css`).
 - **Dependency discipline**: Prefer zero new dependencies for utility functions (hex validation, contrast math are simple enough inline). When adding any dependency, run `pnpm audit` and check for CRITICAL/HIGH CVEs before merge.
 - **No network requests**: DSM is offline-first. Any `fetch()`, `XMLHttpRequest`, or external URL reference is a flag — get explicit approval before adding it.
 
@@ -160,7 +160,6 @@ dsm-ai/
 │   │   ├── ShareButton.tsx           # Copy shareable URL button (base64 hash state)
 │   │   ├── ComponentsView.tsx        # Component gallery: buttons/inputs/cards/badges/alerts/focus demo
 │   │   ├── SystemTokensView.tsx      # Raw token display: colors/typography/spacing/radius/shadows
-│   │   ├── ThemePreview.tsx          # Legacy color-swatch + WCAG contrast widget (not imported anywhere)
 │   │   └── layouts/
 │   │       ├── SaasLayout.tsx        # SaaS dashboard mockup (tabIndex={-1} on all interactive elements)
 │   │       ├── BlogLayout.tsx        # Blog/content site mockup
