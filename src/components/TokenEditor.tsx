@@ -109,18 +109,16 @@ function getDensityIndex(spacingMd: string): number {
 
 // ── Border radius presets ──────────────────────────────────────────────────────
 const RADIUS_PRESETS = [
-  { label: 'Sharp',   id: 'sharp',   radius: { none: '0px', sm: '1px',   md: '2px',   lg: '4px',   xl: '6px',   full: '9999px' } },
-  { label: 'Subtle',  id: 'subtle',  radius: { none: '0px', sm: '3px',   md: '6px',   lg: '10px',  xl: '14px',  full: '9999px' } },
-  { label: 'Rounded', id: 'rounded', radius: { none: '0px', sm: '6px',   md: '12px',  lg: '18px',  xl: '24px',  full: '9999px' } },
-  { label: 'Pill',    id: 'pill',    radius: { none: '0px', sm: '999px', md: '999px', lg: '999px', xl: '999px', full: '9999px' } },
+  { label: 'Sharp',   id: 'sharp',   radius: { none: '0px', sm: '1px',  md: '2px',  lg: '4px',  xl: '6px',  full: '9999px' } },
+  { label: 'Subtle',  id: 'subtle',  radius: { none: '0px', sm: '3px',  md: '6px',  lg: '10px', xl: '14px', full: '9999px' } },
+  { label: 'Rounded', id: 'rounded', radius: { none: '0px', sm: '6px',  md: '12px', lg: '18px', xl: '24px', full: '9999px' } },
 ]
 
 function getRadiusPresetId(borderRadiusMd: string): string {
   const px = parseInt(borderRadiusMd, 10)
-  if (px <= 2)   return 'sharp'
-  if (px <= 8)   return 'subtle'
-  if (px <= 500) return 'rounded'
-  return 'pill'
+  if (px <= 2) return 'sharp'
+  if (px <= 8) return 'subtle'
+  return 'rounded'
 }
 
 // ── Color row ──────────────────────────────────────────────────────────────────
