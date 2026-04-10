@@ -41,7 +41,7 @@ Before marking any task done, verify:
 - [ ] `pnpm audit` — no CRITICAL or HIGH CVEs
 - [ ] Export output tested — generated MD/JSON/CSS is valid and matches Data Map field names
 - [ ] Color contrast: all template defaults meet WCAG AA (4.5:1 for text, 3:1 for large text)
-- [ ] No hardcoded design values outside of `src/data/templates.ts`
+- [ ] No hardcoded design values outside of `src/data/variants.ts`
 - [ ] New interactive elements have keyboard accessibility (tab, enter, escape)
 - [ ] No dead code, unused imports, or debug statements
 - [ ] Data map updated if new tokens or export fields were added
@@ -57,7 +57,7 @@ Before marking any task done, verify:
 |-------------|----------------|
 | New design token added | Update `THEME_DATA_MAP.md` Section 1 (Entity Schema) |
 | New export format or field | Update `THEME_DATA_MAP.md` Section 2 (Data Flow) + Section 3 (Frontend Consumers) |
-| New template added | Update `THEME_DATA_MAP.md` + `docs/DOMAIN.md` (Business Rules) |
+| New variant or layout type added | Update `THEME_DATA_MAP.md` + `docs/DOMAIN.md` (Business Rules) |
 | New route or page | Update `docs/INDEX.md` routing table |
 | Bug fix revealing a systemic pattern | Add to CLAUDE.md Critical Patterns + `memory/project_context.md` |
 
@@ -93,7 +93,7 @@ Before marking any task done, verify:
   - Line height: `/^\d+(\.\d+)?$/` — reject on failure
   - Letter spacing: `/^-?\d+(\.\d+)?(px|em|rem)$/` — reject on failure
   - **Font family — allowlist ONLY**: `/^[a-zA-Z0-9 ,\-_.']+$/` max 100 chars. Use literal space `[ ]`, NOT `\s` — `\s` matches `\n` which is an injection vector. Do NOT use a strip list (misses `@`, `(`, `)`, `/`, `*`). Reject and revert on failure.
-- **Initial template values are the trust boundary.** Template values in `templates.ts` bypass `TokenEditor` validation. Every string in `templates.ts` must be manually verified as clean. The file has a security comment to this effect.
+- **Initial variant values are the trust boundary.** Variant values in `variants.ts` bypass `TokenEditor` validation. Every string in `variants.ts` must be manually verified as clean. The file has a security comment to this effect.
 - **Prompt injection risk in exports**: DSM exports Markdown consumed by AI agents. `fontFamily` (user-editable) must pass the allowlist before appearing in MD or CSS exports. Fall back to `'system-ui'` if it fails at export time. `JSON.stringify` handles escaping for JSON — no additional sanitization needed there.
 - **Color picker `onChange` MUST be debounced**: Use `useRef` to hold the `setTimeout` timer (80ms). Clear in `useEffect` cleanup to prevent post-unmount state updates. Do NOT call `updateSection` on every color picker pixel — use debounce or `startTransition`.
 - **Download filename**: NEVER derive the download filename from user input. Use hardcoded names only (`design_rules.md`, `design_tokens.json`, `variables.css`).
@@ -104,7 +104,13 @@ Before marking any task done, verify:
 - **Two separate config files**: `vite.config.ts` imports from `'vite'`; `vitest.config.ts` imports from `'vitest/config'`. Never merge them — `vitest/config` ships Vite 5 internally and causes type conflicts with Vite 6.
 - **tsconfig.json includes `src/` only** — config files (`vite.config.ts`, `vitest.config.ts`) are excluded from `tsc --noEmit` to avoid cross-version type conflicts.
 - **esbuild build scripts**: `package.json` must include `"pnpm": { "onlyBuiltDependencies": ["esbuild"] }` — required for Vite to function after a fresh `pnpm install`.
-- **Export token count**: the JSON export produces exactly **38 tokens** (13 colors + 12 typography + 7 spacing + 6 radius).
+- **Export token count**: the JSON export produces exactly **44 tokens** (15 colors + 12 typography + 7 spacing + 6 radius + 4 shadows). Verified by `toHaveLength(44)` in `src/utils/export.test.ts`.
+
+### Documentation Drift Prevention
+- **Rule**: After any PR that renames a file, adds a component, changes token counts, or adds an export format — verify `CLAUDE.md`'s project-structure section and every numeric claim in Critical Patterns against the live code. Fix drift in the SAME PR. Never promise a follow-up.
+- **Why**: Fast iteration during gap-closure-v2 and the UI redesign left CLAUDE.md with 10 stale references (wrong filenames, missing components, wrong token count, missing layouts) that persisted across multiple sessions before being caught.
+- **Where**: `CLAUDE.md` (project-structure section; Build & Config token-count claim); `docs/data-maps/THEME_DATA_MAP.md` (entity schemas, field counts, export format list)
+- **Check**: `Glob src/components/**/*.tsx` vs component list; `Glob src/utils/*.ts` vs utils list; token count in Build & Config must match `toHaveLength()` assertion in `src/utils/export.test.ts`; variant count must match `STYLE_VARIANTS.length` in `src/data/variants.ts`; layout count must match `IMPLEMENTED` map in `src/components/LayoutPreview.tsx`.
 
 ### Component Patterns
 - **No prop drilling beyond 2 levels** — lift state to a React context if needed
@@ -137,29 +143,41 @@ dsm-ai/
 │   ├── workflows/ci.yml              # CI pipeline
 │   └── PULL_REQUEST_TEMPLATE.md     # PR quality checklist
 ├── memory/
-│   └── project_context.md           # Persistent AI memory
+│   ├── project_context.md           # Decisions log + cross-session history
+│   └── MEMORY.md                     # Active session memory (auto-loaded by Claude)
 ├── src/
 │   ├── main.tsx                      # App entry point
 │   ├── App.tsx                       # Root component
 │   ├── types/
 │   │   └── theme.ts                  # TypeScript types (must match Data Map)
 │   ├── data/
-│   │   └── templates.ts              # Built-in design system templates (SECURITY: values are trust boundary)
+│   │   └── variants.ts               # 10 style variant definitions (SECURITY: values are trust boundary)
 │   ├── components/
-│   │   ├── TemplateGallery.tsx       # Horizontal scroll strip of template cards
-│   │   ├── TemplateCard.tsx          # Individual card with layout type badge
-│   │   ├── LayoutPreview.tsx         # CSS var injector + layout dispatcher (aria-hidden)
-│   │   ├── TokenEditor.tsx           # Token editor (validation, debounce, WCAG contrast)
-│   │   ├── ExportPreview.tsx         # Export file preview + download
+│   │   ├── LayoutGallery.tsx         # 8 layout type selector cards (dark sidebar)
+│   │   ├── LayoutPreview.tsx         # CSS var injector + layout/components/tokens view dispatcher
+│   │   ├── TokenEditor.tsx           # Token editor (validation, debounce, WCAG contrast, palette gen UI)
+│   │   ├── ExportPreview.tsx         # 5-format export preview (MD/JSON/CSS/TW v3/TW v4) + copy/download
+│   │   ├── ShareButton.tsx           # Copy shareable URL button (base64 hash state)
+│   │   ├── ComponentsView.tsx        # Component gallery: buttons/inputs/cards/badges/alerts/focus demo
+│   │   ├── SystemTokensView.tsx      # Raw token display: colors/typography/spacing/radius/shadows
+│   │   ├── ThemePreview.tsx          # Legacy color-swatch + WCAG contrast widget (not imported anywhere)
 │   │   └── layouts/
-│   │       ├── SaasLayout.tsx        # SaaS dashboard mockup (tabIndex={-1} on all interactive)
+│   │       ├── SaasLayout.tsx        # SaaS dashboard mockup (tabIndex={-1} on all interactive elements)
 │   │       ├── BlogLayout.tsx        # Blog/content site mockup
 │   │       ├── LandingLayout.tsx     # Landing page mockup
-│   │       └── PortfolioLayout.tsx   # Portfolio site mockup
-│   ├── hooks/                        # Custom React hooks
+│   │       ├── PortfolioLayout.tsx   # Portfolio site mockup
+│   │       ├── EcommerceLayout.tsx   # E-commerce store mockup
+│   │       ├── DocsLayout.tsx        # Documentation site mockup
+│   │       ├── CommunityLayout.tsx   # Community/forum mockup
+│   │       └── MobileLayout.tsx      # Mobile app frame mockup
+│   ├── hooks/
+│   │   └── useTheme.ts               # Theme state (layoutType + variant + colorMode + overrides); URL hash sharing
 │   ├── utils/
 │   │   ├── contrast.ts               # WCAG 2.1 contrast math
-│   │   └── export.ts                 # MD/JSON/CSS export utilities
+│   │   ├── export.ts                 # 5-format export: MD/JSON/CSS/TW v3/TW v4 (44 tokens)
+│   │   ├── export.test.ts            # 26 export tests; toHaveLength(44) is the token-count contract
+│   │   ├── palette.ts                # OKLCH palette generator — zero deps; generatePalette(seedHex)
+│   │   └── palette.test.ts           # 21 palette tests: WCAG AA, hex validation, determinism, edge cases
 │   └── styles/
 │       └── global.css                # Global CSS + CSS custom properties
 ├── public/
