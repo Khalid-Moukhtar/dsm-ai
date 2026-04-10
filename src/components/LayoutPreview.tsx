@@ -53,6 +53,7 @@ function LayoutPlaceholder({ layoutType, activePage, onPageChange }: Placeholder
 export function LayoutPreview({ theme }: Props) {
   const [activePage, setActivePage] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [scale, setScale] = useState<75 | 100>(75)
 
   // Reset page when layout type changes
   const prevLayoutType = useMemo(() => theme.layoutType, [theme.layoutType])
@@ -127,22 +128,41 @@ export function LayoutPreview({ theme }: Props) {
       className={`layout-preview${isExpanded ? ' layout-preview--expanded' : ''}`}
       style={cssVars}
     >
-      {/* Header: label + expand button — NOT aria-hidden, keyboard accessible */}
+      {/* Header: label + scale toggle + expand button — NOT aria-hidden, keyboard accessible */}
       <div className="layout-preview__header">
         <span className="layout-preview__label">{theme.name}</span>
-        <button
-          className="layout-preview__expand-btn"
-          onClick={() => setIsExpanded(e => !e)}
-          type="button"
-          aria-label={isExpanded ? 'Collapse preview' : 'Expand preview'}
-          title={isExpanded ? 'Collapse' : 'Expand'}
-        >
-          {isExpanded ? '✕' : '⤢'}
-        </button>
+        <div className="layout-preview__header-actions">
+          <div className="layout-preview__scale-toggle" role="group" aria-label="Preview scale">
+            {([75, 100] as const).map(s => (
+              <button
+                key={s}
+                className={`layout-preview__scale-btn${scale === s ? ' layout-preview__scale-btn--active' : ''}`}
+                onClick={() => setScale(s)}
+                type="button"
+                aria-pressed={scale === s}
+              >
+                {s}%
+              </button>
+            ))}
+          </div>
+          <button
+            className="layout-preview__expand-btn"
+            onClick={() => setIsExpanded(e => !e)}
+            type="button"
+            aria-label={isExpanded ? 'Collapse preview' : 'Expand preview'}
+            title={isExpanded ? 'Collapse' : 'Expand'}
+          >
+            {isExpanded ? '✕' : '⤢'}
+          </button>
+        </div>
       </div>
 
       {/* Scene: decorative — ALL interactive elements inside must have tabIndex={-1} */}
-      <div className="layout-preview__scene" aria-hidden="true">
+      <div
+        className="layout-preview__scene"
+        aria-hidden="true"
+        style={scale !== 100 ? { zoom: scale / 100 } as React.CSSProperties : undefined}
+      >
         {LayoutComponent
           ? <LayoutComponent activePage={activePage} onPageChange={setActivePage} />
           : <LayoutPlaceholder layoutType={theme.layoutType} activePage={activePage} onPageChange={setActivePage} />

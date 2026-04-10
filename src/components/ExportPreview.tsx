@@ -27,6 +27,12 @@ export function ExportPreview({ theme }: Props) {
 
   const fileName = getFileName(theme, activeFormat)
 
+  const lineCount = exportString.split('\n').length
+  const byteSize = new TextEncoder().encode(exportString).byteLength
+  const sizeLabel = byteSize < 1024
+    ? `${byteSize} B`
+    : `${(byteSize / 1024).toFixed(1)} KB`
+
   function handleDownload() {
     downloadTheme(theme, activeFormat)
   }
@@ -65,8 +71,11 @@ export function ExportPreview({ theme }: Props) {
         ))}
       </div>
 
-      {/* File name hint */}
-      <p className="export-preview__filename">{fileName}</p>
+      {/* File name + stats */}
+      <div className="export-preview__meta">
+        <span className="export-preview__filename">{fileName}</span>
+        <span className="export-preview__stats">{lineCount} lines · {sizeLabel}</span>
+      </div>
 
       {/* Content preview */}
       <div

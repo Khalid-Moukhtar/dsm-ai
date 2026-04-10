@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import type {
   Theme,
   ExportFormat,
@@ -7,7 +7,7 @@ import type {
   StyleVariant,
   ColorMode,
 } from '../types/theme'
-import { VARIANTS, LAYOUT_TYPE_META } from '../data/variants'
+import { VARIANTS, LAYOUT_TYPE_META, LAYOUT_TYPES, STYLE_VARIANTS } from '../data/variants'
 import { downloadTheme } from '../utils/export'
 
 // Overrides are user tweaks layered on top of the base variant values.
@@ -37,6 +37,38 @@ function computeTheme(
   }
 }
 
+// ── localStorage persistence ─────────────────────────────────────────────────
+const STORAGE_KEY = 'dsm-v1'
+
+interface PersistedState {
+  layoutType: LayoutType | null
+  variant: StyleVariant
+  colorMode: ColorMode
+  overrides: Overrides
+  nameOverride: string | null
+}
+
+function loadState(): Partial<PersistedState> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return {}
+    const p = JSON.parse(raw)
+    return typeof p === 'object' && p !== null ? p : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveState(state: PersistedState): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  } catch {
+    // localStorage unavailable (private browsing, storage full) — fail silently
+  }
+}
+
+// ── Hook ─────────────────────────────────────────────────────────────────────
+
 export interface UseThemeReturn {
   layoutType: LayoutType | null
   variant: StyleVariant
@@ -52,11 +84,31 @@ export interface UseThemeReturn {
 }
 
 export function useTheme(): UseThemeReturn {
-  const [layoutType, setLayoutTypeState] = useState<LayoutType | null>(null)
-  const [variant, setVariantState] = useState<StyleVariant>('stripe')
-  const [colorMode, setColorModeState] = useState<ColorMode>('light')
-  const [overrides, setOverrides] = useState<Overrides>({})
-  const [nameOverride, setNameOverride] = useState<string | null>(null)
+  const [layoutType, setLayoutTypeState] = useState<LayoutType | null>(() => {
+    const p = loadState()
+    return p.layoutType && LAYOUT_TYPES.includes(p.layoutType) ? p.layoutType : null
+  })
+  const [variant, setVariantState] = useState<StyleVariant>(() => {
+    const p = loadState()
+    return p.variant && STYLE_VARIANTS.includes(p.variant) ? p.variant : 'stripe'
+  })
+  const [colorMode, setColorModeState] = useState<ColorMode>(() => {
+    const p = loadState()
+    return p.colorMode === 'light' || p.colorMode === 'dark' ? p.colorMode : 'light'
+  })
+  const [overrides, setOverrides] = useState<Overrides>(() => {
+    const p = loadState()
+    return p.overrides && typeof p.overrides === 'object' ? p.overrides : {}
+  })
+  const [nameOverride, setNameOverride] = useState<string | null>(() => {
+    const p = loadState()
+    return typeof p.nameOverride === 'string' ? p.nameOverride : null
+  })
+
+  // Persist all state whenever any piece changes
+  useEffect(() => {
+    saveState({ layoutType, variant, colorMode, overrides, nameOverride })
+  }, [layoutType, variant, colorMode, overrides, nameOverride])
 
   const selectedTheme = useMemo(() => {
     if (!layoutType) return null

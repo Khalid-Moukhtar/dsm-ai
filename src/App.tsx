@@ -4,8 +4,8 @@ import { LayoutGallery } from './components/LayoutGallery'
 import { LayoutPreview } from './components/LayoutPreview'
 import { TokenEditor } from './components/TokenEditor'
 import { ExportPreview } from './components/ExportPreview'
-import { STYLE_VARIANTS, VARIANTS } from './data/variants'
-import type { StyleVariant, ColorMode } from './types/theme'
+import { STYLE_VARIANTS, VARIANTS, LAYOUT_TYPES } from './data/variants'
+import type { StyleVariant, ColorMode, LayoutType } from './types/theme'
 
 export default function App() {
   const [isDsmDark, setIsDsmDark] = useState(false)
@@ -27,6 +27,15 @@ export default function App() {
     updateSection,
     resetToVariant,
   } = useTheme()
+
+  function handleRandomize() {
+    const randLayout = LAYOUT_TYPES[Math.floor(Math.random() * LAYOUT_TYPES.length)] as LayoutType
+    const randVariant = STYLE_VARIANTS[Math.floor(Math.random() * STYLE_VARIANTS.length)] as StyleVariant
+    const randMode: ColorMode = Math.random() > 0.5 ? 'dark' : 'light'
+    setLayoutType(randLayout)
+    setVariant(randVariant)
+    setColorMode(randMode)
+  }
 
   return (
     <div className="app">
@@ -59,30 +68,53 @@ export default function App() {
           />
         </section>
 
+        {/* Variant gallery — always visible */}
+        <section aria-label="Style variants">
+          <div className="section-heading-row">
+            <h2 className="section-heading">Pick your style</h2>
+            <button
+              className="randomize-btn"
+              onClick={handleRandomize}
+              type="button"
+              title="Randomize layout, style, and mode"
+            >
+              ⚄ Randomize
+            </button>
+          </div>
+          <div className="variant-gallery" role="group" aria-label="Style variant">
+            {STYLE_VARIANTS.map(v => {
+              const def = VARIANTS[v]
+              const swatchColors = [
+                def.lightColors.primary,
+                def.lightColors.surface,
+                def.lightColors.accent,
+              ]
+              return (
+                <button
+                  key={v}
+                  className={`variant-card${variant === v ? ' variant-card--selected' : ''}`}
+                  onClick={() => setVariant(v as StyleVariant)}
+                  type="button"
+                  aria-pressed={variant === v}
+                >
+                  <div className="variant-card__swatches" aria-hidden="true">
+                    {swatchColors.map(color => (
+                      <span key={color} className="variant-card__swatch" style={{ backgroundColor: color }} />
+                    ))}
+                  </div>
+                  <span className="variant-card__name">{def.meta.label}</span>
+                  <span className="variant-card__desc">{def.meta.description}</span>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
         {/* 3-column workspace — shown once a layout type is selected */}
         {selectedTheme && (
           <section className="workspace" aria-label="Theme editor">
-            {/* Variant + mode controls bar */}
+            {/* Name + mode controls bar */}
             <div className="workspace-controls">
-              <div className="workspace-controls__group">
-                <label className="workspace-controls__label" htmlFor="variant-select">
-                  Style
-                </label>
-                <select
-                  id="variant-select"
-                  className="workspace-controls__select"
-                  value={variant}
-                  onChange={e => setVariant(e.target.value as StyleVariant)}
-                  aria-label="Select style variant"
-                >
-                  {STYLE_VARIANTS.map(v => (
-                    <option key={v} value={v}>
-                      {VARIANTS[v].meta.label} — {VARIANTS[v].meta.description}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <div className="workspace-controls__group workspace-controls__group--name">
                 <label className="workspace-controls__label" htmlFor="theme-name-input">
                   Name
@@ -141,9 +173,33 @@ export default function App() {
         )}
 
         {!selectedTheme && (
-          <p className="app-empty-hint">
-            Select a layout type above to start.
-          </p>
+          <div className="app-empty-state" role="status">
+            <div className="app-empty-state__steps">
+              <div className="app-empty-step">
+                <span className="app-empty-step__num">1</span>
+                <div className="app-empty-step__text">
+                  <strong>Pick a layout</strong>
+                  <p>Choose what type of app or site you're building.</p>
+                </div>
+              </div>
+              <span className="app-empty-step__arrow" aria-hidden="true">→</span>
+              <div className="app-empty-step">
+                <span className="app-empty-step__num">2</span>
+                <div className="app-empty-step__text">
+                  <strong>Choose a style</strong>
+                  <p>Pick the brand vibe that feels right.</p>
+                </div>
+              </div>
+              <span className="app-empty-step__arrow" aria-hidden="true">→</span>
+              <div className="app-empty-step">
+                <span className="app-empty-step__num">3</span>
+                <div className="app-empty-step__text">
+                  <strong>Export to AI</strong>
+                  <p>Paste the file into Claude, Cursor, or your coding agent.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </main>
 
