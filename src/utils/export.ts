@@ -4,18 +4,26 @@
 // SECURITY: JSON.stringify handles escaping for JSON — do NOT add sanitization to toJson().
 // SECURITY: fontFamily is sanitized via allowlist before MD and CSS interpolation.
 // layoutType, variant, and colorMode are intentionally excluded from all export formats.
-// They are UI-routing/metadata fields only. The toHaveLength(38) test enforces this.
+// They are UI-routing/metadata fields only. The toHaveLength(44) test enforces this.
 
 import type { Theme, ExportFormat } from '../types/theme'
 
 // fontFamily allowlist: only safe characters for CSS font-family and Markdown.
 // Rejects injection chars like @, (, ), ;, {, }, etc.
-// Use literal space [ ] instead of \s — \s matches \n which is a injection vector
+// Use literal space [ ] instead of \s — \s matches \n which is an injection vector.
+// Each comma-separated font name is stripped of its surrounding quotes before the check,
+// so "Space Grotesk" → Space Grotesk (passes). The original value is returned if all
+// tokens pass, preserving proper CSS quoting in the output.
 const FONT_FAMILY_ALLOWLIST = /^[a-zA-Z0-9 ,\-_.']+$/
 
 function safeFontFamily(value: string): string {
   const trimmed = value.trim().slice(0, 100)
-  return FONT_FAMILY_ALLOWLIST.test(trimmed) ? trimmed : 'system-ui'
+  // Strip surrounding quotes from each font name before checking allowlist
+  const unquoted = trimmed
+    .split(',')
+    .map(f => f.trim().replace(/^["']|["']$/g, ''))
+    .join(', ')
+  return FONT_FAMILY_ALLOWLIST.test(unquoted) ? trimmed : 'system-ui'
 }
 
 export function exportTheme(theme: Theme, format: ExportFormat): string {
@@ -26,6 +34,10 @@ export function exportTheme(theme: Theme, format: ExportFormat): string {
       return toJson(theme)
     case 'css':
       return toCss(theme)
+    case 'tailwind':
+      return toTailwind(theme)
+    case 'tailwind-v4':
+      return toTailwindV4(theme)
   }
 }
 
@@ -37,6 +49,10 @@ export function getFileName(_theme: Theme, format: ExportFormat): string {
       return 'design_tokens.json'
     case 'css':
       return 'variables.css'
+    case 'tailwind':
+      return 'tailwind.config.js'
+    case 'tailwind-v4':
+      return 'theme.css'
   }
 }
 
@@ -80,6 +96,8 @@ function toMarkdown(theme: Theme): string {
 | color_error | \`${theme.colors.error}\` |
 | color_success | \`${theme.colors.success}\` |
 | color_warning | \`${theme.colors.warning}\` |
+| color_focus_ring | \`${theme.colors.focusRing}\` |
+| color_info | \`${theme.colors.info}\` |
 
 ## Typography
 
@@ -120,6 +138,15 @@ function toMarkdown(theme: Theme): string {
 | border_radius_lg | \`${theme.borderRadius.lg}\` |
 | border_radius_xl | \`${theme.borderRadius.xl}\` |
 | border_radius_full | \`${theme.borderRadius.full}\` |
+
+## Shadows
+
+| Token | Value |
+|-------|-------|
+| shadow_sm | \`${theme.shadows.sm}\` |
+| shadow_md | \`${theme.shadows.md}\` |
+| shadow_lg | \`${theme.shadows.lg}\` |
+| shadow_xl | \`${theme.shadows.xl}\` |
 `
 }
 
@@ -138,6 +165,8 @@ function toJson(theme: Theme): string {
     color_error: theme.colors.error,
     color_success: theme.colors.success,
     color_warning: theme.colors.warning,
+    color_focus_ring: theme.colors.focusRing,
+    color_info: theme.colors.info,
     font_family: theme.typography.fontFamily,
     font_size_base: theme.typography.fontSizeBase,
     font_size_sm: theme.typography.fontSizeSm,
@@ -163,6 +192,10 @@ function toJson(theme: Theme): string {
     border_radius_lg: theme.borderRadius.lg,
     border_radius_xl: theme.borderRadius.xl,
     border_radius_full: theme.borderRadius.full,
+    shadow_sm: theme.shadows.sm,
+    shadow_md: theme.shadows.md,
+    shadow_lg: theme.shadows.lg,
+    shadow_xl: theme.shadows.xl,
   }
   return JSON.stringify(tokens, null, 2)
 }
@@ -183,6 +216,8 @@ function toCss(theme: Theme): string {
   --color-error: ${theme.colors.error};
   --color-success: ${theme.colors.success};
   --color-warning: ${theme.colors.warning};
+  --color-focus-ring: ${theme.colors.focusRing};
+  --color-info: ${theme.colors.info};
 
   /* Typography */
   --font-family: ${safeFontFamily(theme.typography.fontFamily)};
@@ -214,6 +249,167 @@ function toCss(theme: Theme): string {
   --border-radius-lg: ${theme.borderRadius.lg};
   --border-radius-xl: ${theme.borderRadius.xl};
   --border-radius-full: ${theme.borderRadius.full};
+
+  /* Shadows */
+  --shadow-sm: ${theme.shadows.sm};
+  --shadow-md: ${theme.shadows.md};
+  --shadow-lg: ${theme.shadows.lg};
+  --shadow-xl: ${theme.shadows.xl};
+}
+`
+}
+
+// Targets Tailwind CSS v3 (module.exports format).
+// fontFamily: split raw value and strip surrounding quotes from each token —
+// do NOT use safeFontFamily() here, as its allowlist rejects double-quoted names
+// ("Space Grotesk" etc.), causing silent fallback for legitimate Google Fonts.
+// The values go into a JS array (not interpolated into CSS/HTML), so stripping
+// surrounding quotes per token is the correct and safe approach.
+function toTailwind(theme: Theme): string {
+  const fontArr = theme.typography.fontFamily
+    .split(',')
+    .map(f => f.trim().replace(/^["']|["']$/g, ''))
+
+  const colors = {
+    primary:    theme.colors.primary,
+    secondary:  theme.colors.secondary,
+    background: theme.colors.background,
+    surface:    theme.colors.surface,
+    text:       theme.colors.text,
+    muted:      theme.colors.textMuted,
+    border:     theme.colors.border,
+    accent:     theme.colors.accent,
+    error:      theme.colors.error,
+    success:    theme.colors.success,
+    warning:    theme.colors.warning,
+    'focus-ring': theme.colors.focusRing,
+    info:       theme.colors.info,
+  }
+
+  const fontSize = {
+    sm:    [theme.typography.fontSizeSm,   { lineHeight: String(theme.typography.lineHeightBase) }],
+    base:  [theme.typography.fontSizeBase, { lineHeight: String(theme.typography.lineHeightBase) }],
+    lg:    [theme.typography.fontSizeLg,   { lineHeight: String(theme.typography.lineHeightBase) }],
+    xl:    [theme.typography.fontSizeXl,   { lineHeight: '1.3' }],
+    '2xl': [theme.typography.fontSize2xl,  { lineHeight: '1.2' }],
+    '3xl': [theme.typography.fontSize3xl,  { lineHeight: '1.1' }],
+  }
+
+  const fontWeight = {
+    normal: String(theme.typography.fontWeightNormal),
+    medium: String(theme.typography.fontWeightMedium),
+    bold:   String(theme.typography.fontWeightBold),
+  }
+
+  const spacing = {
+    xs:   theme.spacing.xs,
+    sm:   theme.spacing.sm,
+    md:   theme.spacing.md,
+    lg:   theme.spacing.lg,
+    xl:   theme.spacing.xl,
+    xxl:  theme.spacing.xxl,
+    xxxl: theme.spacing.xxxl,
+  }
+
+  const borderRadius = {
+    none: theme.borderRadius.none,
+    sm:   theme.borderRadius.sm,
+    DEFAULT: theme.borderRadius.md,
+    lg:   theme.borderRadius.lg,
+    xl:   theme.borderRadius.xl,
+    full: theme.borderRadius.full,
+  }
+
+  const boxShadow = {
+    sm: theme.shadows.sm,
+    DEFAULT: theme.shadows.md,
+    lg: theme.shadows.lg,
+    xl: theme.shadows.xl,
+  }
+
+  return `/** @type {import('tailwindcss').Config} */
+// Generated by DSM — Design System Maker
+// Targets Tailwind CSS v3 (module.exports format)
+module.exports = {
+  theme: {
+    extend: {
+      colors: ${JSON.stringify(colors, null, 6).replace(/^/gm, '      ').trimStart()},
+      fontFamily: {
+        sans: ${JSON.stringify(fontArr)},
+      },
+      fontSize: ${JSON.stringify(fontSize, null, 6).replace(/^/gm, '      ').trimStart()},
+      fontWeight: ${JSON.stringify(fontWeight, null, 6).replace(/^/gm, '      ').trimStart()},
+      spacing: ${JSON.stringify(spacing, null, 6).replace(/^/gm, '      ').trimStart()},
+      borderRadius: ${JSON.stringify(borderRadius, null, 6).replace(/^/gm, '      ').trimStart()},
+      boxShadow: ${JSON.stringify(boxShadow, null, 6).replace(/^/gm, '      ').trimStart()},
+    },
+  },
+}
+`
+}
+
+// Targets Tailwind CSS v4 (@theme block format, file: theme.css).
+// safeFontFamily() is used here — values are interpolated into CSS context.
+function toTailwindV4(theme: Theme): string {
+  const fontFamily = safeFontFamily(theme.typography.fontFamily)
+  return `@import "tailwindcss";
+
+/* Generated by DSM — Design System Maker */
+/* Targets Tailwind CSS v4 (@theme block format) */
+@theme {
+  /* Colors */
+  --color-primary: ${theme.colors.primary};
+  --color-primary-foreground: ${theme.colors.primaryForeground};
+  --color-secondary: ${theme.colors.secondary};
+  --color-secondary-foreground: ${theme.colors.secondaryForeground};
+  --color-background: ${theme.colors.background};
+  --color-surface: ${theme.colors.surface};
+  --color-text: ${theme.colors.text};
+  --color-text-muted: ${theme.colors.textMuted};
+  --color-border: ${theme.colors.border};
+  --color-accent: ${theme.colors.accent};
+  --color-error: ${theme.colors.error};
+  --color-success: ${theme.colors.success};
+  --color-warning: ${theme.colors.warning};
+  --color-focus-ring: ${theme.colors.focusRing};
+  --color-info: ${theme.colors.info};
+
+  /* Typography */
+  --font-family-sans: ${fontFamily};
+  --text-sm: ${theme.typography.fontSizeSm};
+  --text-base: ${theme.typography.fontSizeBase};
+  --text-lg: ${theme.typography.fontSizeLg};
+  --text-xl: ${theme.typography.fontSizeXl};
+  --text-2xl: ${theme.typography.fontSize2xl};
+  --text-3xl: ${theme.typography.fontSize3xl};
+  --font-weight-normal: ${theme.typography.fontWeightNormal};
+  --font-weight-medium: ${theme.typography.fontWeightMedium};
+  --font-weight-bold: ${theme.typography.fontWeightBold};
+  --leading-base: ${theme.typography.lineHeightBase};
+  --tracking-base: ${theme.typography.letterSpacingBase};
+
+  /* Spacing */
+  --spacing-xs: ${theme.spacing.xs};
+  --spacing-sm: ${theme.spacing.sm};
+  --spacing-md: ${theme.spacing.md};
+  --spacing-lg: ${theme.spacing.lg};
+  --spacing-xl: ${theme.spacing.xl};
+  --spacing-xxl: ${theme.spacing.xxl};
+  --spacing-xxxl: ${theme.spacing.xxxl};
+
+  /* Border Radius */
+  --radius-none: ${theme.borderRadius.none};
+  --radius-sm: ${theme.borderRadius.sm};
+  --radius-md: ${theme.borderRadius.md};
+  --radius-lg: ${theme.borderRadius.lg};
+  --radius-xl: ${theme.borderRadius.xl};
+  --radius-full: ${theme.borderRadius.full};
+
+  /* Shadows */
+  --shadow-sm: ${theme.shadows.sm};
+  --shadow-md: ${theme.shadows.md};
+  --shadow-lg: ${theme.shadows.lg};
+  --shadow-xl: ${theme.shadows.xl};
 }
 `
 }

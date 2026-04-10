@@ -6,6 +6,7 @@ import type {
   LayoutType,
   StyleVariant,
   ColorMode,
+  ColorPalette,
 } from '../types/theme'
 import { VARIANTS, LAYOUT_TYPE_META, LAYOUT_TYPES, STYLE_VARIANTS } from '../data/variants'
 import { downloadTheme } from '../utils/export'
@@ -34,6 +35,7 @@ function computeTheme(
     typography: { ...def.typography, ...(overrides.typography ?? {}) },
     spacing: { ...def.spacing, ...(overrides.spacing ?? {}) },
     borderRadius: { ...def.borderRadius, ...(overrides.borderRadius ?? {}) },
+    shadows: { ...def.shadows, ...(overrides.shadows ?? {}) },
   }
 }
 
@@ -67,6 +69,99 @@ function saveState(state: PersistedState): void {
   }
 }
 
+// ── URL state sharing ────────────────────────────────────────────────────────
+// UrlState is a strict subset of PersistedState:
+//   - nameOverride excluded (avoids btoa() non-ASCII crash)
+//   - only color overrides preserved (typography/spacing/radius/shadow are dropped)
+// This is an explicit trade-off: colors are the primary sharing motivation.
+
+// 6-char hex only — 3-char shorthand rejected (consistent with palette.ts)
+const RE_HEX_6 = /^#[0-9A-Fa-f]{6}$/
+
+interface UrlState {
+  layoutType: LayoutType | null
+  variant: StyleVariant
+  colorMode: ColorMode
+  colorOverrides: Partial<ColorPalette>
+}
+
+function encodeUrlState(state: PersistedState): string {
+  const urlState: UrlState = {
+    layoutType: state.layoutType,
+    variant: state.variant,
+    colorMode: state.colorMode,
+    colorOverrides: (state.overrides.colors ?? {}) as Partial<ColorPalette>,
+  }
+  return btoa(JSON.stringify(urlState))
+}
+
+function decodeUrlState(encoded: string): Partial<PersistedState> | null {
+  try {
+    const parsed: unknown = JSON.parse(atob(encoded))
+    if (typeof parsed !== 'object' || parsed === null) return null
+
+    const raw = parsed as Record<string, unknown>
+
+    const variant: StyleVariant =
+      typeof raw['variant'] === 'string' && STYLE_VARIANTS.includes(raw['variant'] as StyleVariant)
+        ? (raw['variant'] as StyleVariant)
+        : 'stripe'
+
+    const colorMode: ColorMode =
+      raw['colorMode'] === 'light' || raw['colorMode'] === 'dark'
+        ? (raw['colorMode'] as ColorMode)
+        : 'light'
+
+    const layoutType: LayoutType | null =
+      typeof raw['layoutType'] === 'string' && LAYOUT_TYPES.includes(raw['layoutType'] as LayoutType)
+        ? (raw['layoutType'] as LayoutType)
+        : null
+
+    // Validate each color override — drop any that fail RE_HEX_6
+    const rawColorOverrides = typeof raw['colorOverrides'] === 'object' && raw['colorOverrides'] !== null
+      ? (raw['colorOverrides'] as Record<string, unknown>)
+      : {}
+
+    const validColorOverrides: Partial<ColorPalette> = {}
+    for (const [key, val] of Object.entries(rawColorOverrides)) {
+      if (typeof val === 'string' && RE_HEX_6.test(val)) {
+        ;(validColorOverrides as Record<string, string>)[key] = val
+      }
+    }
+
+    return {
+      variant,
+      colorMode,
+      layoutType,
+      overrides: Object.keys(validColorOverrides).length > 0
+        ? { colors: validColorOverrides }
+        : {},
+      nameOverride: null,
+    }
+  } catch {
+    return null
+  }
+}
+
+function parseUrlHash(): Partial<PersistedState> | null {
+  try {
+    const hash = window.location.hash
+    if (!hash.startsWith('#state=')) return null
+    const encoded = hash.slice('#state='.length)
+    if (!encoded) return null
+    return decodeUrlState(encoded)
+  } catch {
+    return null
+  }
+}
+
+// Priority: URL hash > localStorage > defaults
+function loadInitialState(): Partial<PersistedState> {
+  const fromUrl = parseUrlHash()
+  if (fromUrl !== null) return fromUrl
+  return loadState()
+}
+
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
 export interface UseThemeReturn {
@@ -84,30 +179,30 @@ export interface UseThemeReturn {
 }
 
 export function useTheme(): UseThemeReturn {
-  const [layoutType, setLayoutTypeState] = useState<LayoutType | null>(() => {
-    const p = loadState()
-    return p.layoutType && LAYOUT_TYPES.includes(p.layoutType) ? p.layoutType : null
-  })
-  const [variant, setVariantState] = useState<StyleVariant>(() => {
-    const p = loadState()
-    return p.variant && STYLE_VARIANTS.includes(p.variant) ? p.variant : 'stripe'
-  })
-  const [colorMode, setColorModeState] = useState<ColorMode>(() => {
-    const p = loadState()
-    return p.colorMode === 'light' || p.colorMode === 'dark' ? p.colorMode : 'light'
-  })
-  const [overrides, setOverrides] = useState<Overrides>(() => {
-    const p = loadState()
-    return p.overrides && typeof p.overrides === 'object' ? p.overrides : {}
-  })
-  const [nameOverride, setNameOverride] = useState<string | null>(() => {
-    const p = loadState()
-    return typeof p.nameOverride === 'string' ? p.nameOverride : null
-  })
+  const initial = useMemo(loadInitialState, [])
 
-  // Persist all state whenever any piece changes
+  const [layoutType, setLayoutTypeState] = useState<LayoutType | null>(() =>
+    initial.layoutType && LAYOUT_TYPES.includes(initial.layoutType) ? initial.layoutType : null,
+  )
+  const [variant, setVariantState] = useState<StyleVariant>(() =>
+    initial.variant && STYLE_VARIANTS.includes(initial.variant) ? initial.variant : 'stripe',
+  )
+  const [colorMode, setColorModeState] = useState<ColorMode>(() =>
+    initial.colorMode === 'light' || initial.colorMode === 'dark' ? initial.colorMode : 'light',
+  )
+  const [overrides, setOverrides] = useState<Overrides>(() =>
+    initial.overrides && typeof initial.overrides === 'object' ? initial.overrides : {},
+  )
+  const [nameOverride, setNameOverride] = useState<string | null>(() =>
+    typeof initial.nameOverride === 'string' ? initial.nameOverride : null,
+  )
+
+  // Persist all state and update URL hash whenever any piece changes
   useEffect(() => {
-    saveState({ layoutType, variant, colorMode, overrides, nameOverride })
+    const state: PersistedState = { layoutType, variant, colorMode, overrides, nameOverride }
+    saveState(state)
+    // Use replaceState (not window.location.hash =) to avoid scroll jump on hash change
+    history.replaceState(null, '', '#state=' + encodeUrlState(state))
   }, [layoutType, variant, colorMode, overrides, nameOverride])
 
   const selectedTheme = useMemo(() => {

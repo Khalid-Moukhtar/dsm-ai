@@ -9,10 +9,12 @@ interface Props {
   theme: Theme
 }
 
-const FORMATS: { id: ExportFormat; label: string }[] = [
-  { id: 'markdown', label: 'MD' },
-  { id: 'json', label: 'JSON' },
-  { id: 'css', label: 'CSS' },
+const FORMATS: { id: ExportFormat; label: string; tooltip: string }[] = [
+  { id: 'markdown',    label: 'MD',    tooltip: 'Markdown file ready to paste into Claude, Cursor, or any AI coding assistant.' },
+  { id: 'json',        label: 'JSON',  tooltip: 'Machine-readable design tokens for design tools and code generators.' },
+  { id: 'css',         label: 'CSS',   tooltip: 'CSS custom properties to paste directly into any stylesheet.' },
+  { id: 'tailwind',    label: 'TW v3', tooltip: 'Tailwind CSS v3 configuration file with your design tokens.' },
+  { id: 'tailwind-v4', label: 'TW v4', tooltip: 'Tailwind CSS v4 theme file using the new @theme block format.' },
 ]
 
 export function ExportPreview({ theme }: Props) {
@@ -22,7 +24,7 @@ export function ExportPreview({ theme }: Props) {
   const exportString = useMemo(
     () => exportTheme(theme, activeFormat),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [theme.colors, theme.typography, theme.spacing, theme.borderRadius, theme.name, theme.variant, theme.colorMode, activeFormat],
+    [theme.colors, theme.typography, theme.spacing, theme.borderRadius, theme.shadows, theme.name, theme.variant, theme.colorMode, activeFormat],
   )
 
   const fileName = getFileName(theme, activeFormat)
@@ -56,7 +58,7 @@ export function ExportPreview({ theme }: Props) {
         role="tablist"
         aria-label="Export format"
       >
-        {FORMATS.map(({ id, label }) => (
+        {FORMATS.map(({ id, label, tooltip }) => (
           <button
             key={id}
             id={tabId(id)}
@@ -65,6 +67,7 @@ export function ExportPreview({ theme }: Props) {
             aria-controls={panelId}
             className={`export-tab${activeFormat === id ? ' export-tab--active' : ''}`}
             onClick={() => setActiveFormat(id)}
+            data-tooltip={tooltip}
           >
             {label}
           </button>
