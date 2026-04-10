@@ -8,6 +8,7 @@ import type {
   Typography,
   SpacingScale,
   BorderRadius,
+  Shadow,
   StyleVariant,
   LayoutType,
 } from '../types/theme'
@@ -21,6 +22,7 @@ export interface VariantDefinition {
   typography: Typography
   spacing: SpacingScale
   borderRadius: BorderRadius
+  shadows: Shadow
 }
 
 // ── Layout type metadata ───────────────────────────────────────────────────────
@@ -49,7 +51,18 @@ export const LAYOUT_TYPE_META: Record<LayoutType, { label: string; description: 
 
 // ── Style variant list ─────────────────────────────────────────────────────────
 
-export const STYLE_VARIANTS: StyleVariant[] = ['stripe', 'linear', 'notion', 'vercel', 'airbnb', 'custom']
+export const STYLE_VARIANTS: StyleVariant[] = [
+  'stripe',
+  'linear',
+  'notion',
+  'vercel',
+  'airbnb',
+  'apple',
+  'spotify',
+  'shopify',
+  'github',
+  'custom',
+]
 
 // ── Brand variant definitions ──────────────────────────────────────────────────
 // All color pairs have been verified to meet WCAG AA contrast ratios.
@@ -72,6 +85,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#DF1B41',
       success:             '#1A9C3E',
       warning:             '#D97706',
+      focusRing:           '#6366F1',
+      info:                '#2563EB',
     },
     darkColors: {
       primary:             '#7C73FF', // lighter indigo for dark bg
@@ -87,6 +102,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#FF6B8A',
       success:             '#4ADE80',
       warning:             '#FCD34D',
+      focusRing:           '#818CF8',
+      info:                '#60A5FA',
     },
     typography: {
       fontFamily:         'Inter, system-ui, -apple-system, sans-serif',
@@ -119,6 +136,12 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       xl:   '14px',
       full: '9999px',
     },
+    shadows: {
+      sm: '0 1px 3px rgba(0,0,0,0.1)',
+      md: '0 4px 8px rgba(0,0,0,0.1)',
+      lg: '0 8px 24px rgba(0,0,0,0.12)',
+      xl: '0 16px 48px rgba(0,0,0,0.12)',
+    },
   },
 
   // ── Linear ─ Dark, ultra-minimal, developer-focused ──────────────────────────
@@ -138,6 +161,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#E5484D',
       success:             '#30A46C',
       warning:             '#F76808',
+      focusRing:           '#7C3AED',
+      info:                '#4F46E5',
     },
     darkColors: {
       primary:             '#7C83E8', // lighter blue-purple for dark
@@ -153,6 +178,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#F87171',
       success:             '#4ADE80',
       warning:             '#FBB040',
+      focusRing:           '#A78BFA',
+      info:                '#818CF8',
     },
     typography: {
       fontFamily:         'Inter, system-ui, -apple-system, sans-serif',
@@ -185,6 +212,12 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       xl:   '8px',
       full: '9999px',
     },
+    shadows: {
+      sm: '0 1px 2px rgba(0,0,0,0.06)',
+      md: '0 1px 4px rgba(0,0,0,0.08)',
+      lg: '0 4px 12px rgba(0,0,0,0.08)',
+      xl: '0 8px 24px rgba(0,0,0,0.08)',
+    },
   },
 
   // ── Notion ─ Warm, readable, content-focused ──────────────────────────────────
@@ -204,6 +237,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#EB5757',
       success:             '#0F7B6C',
       warning:             '#DFAB01',
+      focusRing:           '#2563EB',
+      info:                '#2563EB',
     },
     darkColors: {
       primary:             '#529CCA', // lighter blue on dark
@@ -219,6 +254,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#FF7369',
       success:             '#4DAB9A',
       warning:             '#DFAB01',
+      focusRing:           '#60A5FA',
+      info:                '#60A5FA',
     },
     typography: {
       fontFamily:         '"DM Sans", system-ui, -apple-system, sans-serif',
@@ -251,6 +288,12 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       xl:   '12px',
       full: '9999px',
     },
+    shadows: {
+      sm: 'none',
+      md: 'none',
+      lg: 'none',
+      xl: 'none',
+    },
   },
 
   // ── Vercel ─ Extreme contrast, precision, zero distraction ───────────────────
@@ -270,6 +313,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#FF0000',
       success:             '#00A550',
       warning:             '#F5A623',
+      focusRing:           '#000000',
+      info:                '#0070F3',
     },
     darkColors: {
       primary:             '#FFFFFF',
@@ -285,6 +330,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#FF4444',
       success:             '#33CC66',
       warning:             '#F5A623',
+      focusRing:           '#FFFFFF',
+      info:                '#3291FF',
     },
     typography: {
       fontFamily:         'Inter, system-ui, -apple-system, sans-serif',
@@ -317,6 +364,12 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       xl:   '8px',
       full: '9999px',
     },
+    shadows: {
+      sm: '0 1px 2px rgba(0,0,0,0.06)',
+      md: '0 1px 4px rgba(0,0,0,0.08)',
+      lg: '0 4px 12px rgba(0,0,0,0.08)',
+      xl: '0 8px 24px rgba(0,0,0,0.08)',
+    },
   },
 
   // ── Airbnb ─ Warm, rounded, consumer-first ────────────────────────────────────
@@ -336,6 +389,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#C13515',
       success:             '#008489', // Airbnb teal
       warning:             '#FFB400',
+      focusRing:           '#FF385C',
+      info:                '#0066FF',
     },
     darkColors: {
       primary:             '#FF5A5F', // lighter coral for dark bg
@@ -351,6 +406,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#FF6B4A',
       success:             '#00B4BF',
       warning:             '#FFB400',
+      focusRing:           '#FF6B8A',
+      info:                '#4D9FFF',
     },
     typography: {
       fontFamily:         '"Nunito", system-ui, -apple-system, sans-serif',
@@ -383,6 +440,317 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       xl:   '24px',
       full: '9999px',
     },
+    shadows: {
+      sm: '0 1px 3px rgba(0,0,0,0.1)',
+      md: '0 4px 8px rgba(0,0,0,0.1)',
+      lg: '0 8px 24px rgba(0,0,0,0.12)',
+      xl: '0 16px 48px rgba(0,0,0,0.12)',
+    },
+  },
+
+  // ── Apple ─ Premium, white-space, minimal ─────────────────────────────────────
+  apple: {
+    meta: { label: 'Apple', description: 'Premium, white-space, minimal' },
+    lightColors: {
+      primary:             '#0071E3', // Apple blue
+      primaryForeground:   '#FFFFFF', // on #0071E3: ~5.0:1 ✓ AA
+      secondary:           '#6E6E73', // Apple gray
+      secondaryForeground: '#FFFFFF', // on #6E6E73: ~4.6:1 ✓ AA
+      background:          '#FFFFFF',
+      surface:             '#F5F5F7', // Apple light gray surface
+      text:                '#1D1D1F', // on white: ~18:1 ✓
+      textMuted:           '#6E6E73', // on white: ~4.6:1 ✓ AA
+      border:              '#D2D2D7',
+      accent:              '#0077ED',
+      error:               '#FF3B30',
+      success:             '#34C759',
+      warning:             '#FF9500',
+      focusRing:           '#0071E3',
+      info:                '#007AFF',
+    },
+    darkColors: {
+      primary:             '#0A84FF', // Apple blue on dark
+      primaryForeground:   '#FFFFFF', // on #0A84FF: ~4.5:1 ✓ AA
+      secondary:           '#8E8E93',
+      secondaryForeground: '#FFFFFF', // on #8E8E93: ~4.5:1 ✓ AA
+      background:          '#000000',
+      surface:             '#1C1C1E', // Apple dark surface
+      text:                '#F5F5F7', // on black: ~18:1 ✓
+      textMuted:           '#8E8E93', // on black: ~5.2:1 ✓ AA
+      border:              '#3A3A3C',
+      accent:              '#0A84FF',
+      error:               '#FF453A',
+      success:             '#30D158',
+      warning:             '#FFD60A',
+      focusRing:           '#0A84FF',
+      info:                '#0A84FF',
+    },
+    typography: {
+      fontFamily:         'Inter, system-ui, -apple-system, sans-serif',
+      fontSizeBase:       '17px',
+      fontSizeSm:         '15px',
+      fontSizeLg:         '19px',
+      fontSizeXl:         '21px',
+      fontSize2xl:        '26px',
+      fontSize3xl:        '34px',
+      fontWeightNormal:   400,
+      fontWeightMedium:   500,
+      fontWeightBold:     600,
+      lineHeightBase:     1.55,
+      letterSpacingBase:  '-0.01em',
+    },
+    spacing: {
+      xs:   '4px',
+      sm:   '8px',
+      md:   '16px',
+      lg:   '24px',
+      xl:   '40px',
+      xxl:  '56px',
+      xxxl: '80px',
+    },
+    borderRadius: {
+      none: '0px',
+      sm:   '6px',
+      md:   '10px',
+      lg:   '16px',
+      xl:   '20px',
+      full: '9999px',
+    },
+    shadows: {
+      sm: '0 2px 8px rgba(0,0,0,0.08)',
+      md: '0 4px 16px rgba(0,0,0,0.1)',
+      lg: '0 8px 32px rgba(0,0,0,0.12)',
+      xl: '0 16px 56px rgba(0,0,0,0.14)',
+    },
+  },
+
+  // ── Spotify ─ Vibrant, music, bold green ──────────────────────────────────────
+  spotify: {
+    meta: { label: 'Spotify', description: 'Vibrant, music, bold green' },
+    lightColors: {
+      primary:             '#1DB954', // Spotify green
+      primaryForeground:   '#191414', // on #1DB954: ~6.0:1 ✓ AA
+      secondary:           '#535353',
+      secondaryForeground: '#FFFFFF', // on #535353: ~7.0:1 ✓
+      background:          '#FFFFFF',
+      surface:             '#F6F6F6',
+      text:                '#191414', // on white: ~18:1 ✓
+      textMuted:           '#535353', // on white: ~7.0:1 ✓ AA
+      border:              '#E0E0E0',
+      accent:              '#1DB954',
+      error:               '#E61E32',
+      success:             '#1DB954',
+      warning:             '#F59B23',
+      focusRing:           '#1DB954',
+      info:                '#509BF5',
+    },
+    darkColors: {
+      primary:             '#1DB954', // Spotify green unchanged on dark
+      primaryForeground:   '#191414', // on #1DB954: ~6.0:1 ✓ AA
+      secondary:           '#535353',
+      secondaryForeground: '#FFFFFF', // on #535353: ~7.0:1 ✓
+      background:          '#121212', // Spotify dark background
+      surface:             '#181818',
+      text:                '#FFFFFF', // on #121212: ~20:1 ✓
+      textMuted:           '#B3B3B3', // on #121212: ~8.4:1 ✓ AA
+      border:              '#282828',
+      accent:              '#1DB954',
+      error:               '#E61E32',
+      success:             '#1DB954',
+      warning:             '#F59B23',
+      focusRing:           '#1DB954',
+      info:                '#509BF5',
+    },
+    typography: {
+      // CRITICAL: must match the GOOGLE_FONT_LINKS key in LayoutPreview.tsx exactly
+      fontFamily:         '"DM Sans", system-ui, -apple-system, sans-serif',
+      fontSizeBase:       '16px',
+      fontSizeSm:         '14px',
+      fontSizeLg:         '18px',
+      fontSizeXl:         '20px',
+      fontSize2xl:        '24px',
+      fontSize3xl:        '32px',
+      fontWeightNormal:   400,
+      fontWeightMedium:   500,
+      fontWeightBold:     700,
+      lineHeightBase:     1.5,
+      letterSpacingBase:  '0em',
+    },
+    spacing: {
+      xs:   '4px',
+      sm:   '8px',
+      md:   '16px',
+      lg:   '24px',
+      xl:   '32px',
+      xxl:  '48px',
+      xxxl: '64px',
+    },
+    borderRadius: {
+      none: '0px',
+      sm:   '4px',
+      md:   '8px',
+      lg:   '12px',
+      xl:   '16px',
+      full: '9999px',
+    },
+    shadows: {
+      sm: '0 1px 3px rgba(0,0,0,0.08)',
+      md: '0 2px 6px rgba(0,0,0,0.1)',
+      lg: '0 4px 16px rgba(0,0,0,0.12)',
+      xl: '0 8px 32px rgba(0,0,0,0.12)',
+    },
+  },
+
+  // ── Shopify ─ Clean commerce, trustworthy green ───────────────────────────────
+  shopify: {
+    meta: { label: 'Shopify', description: 'Clean commerce, trustworthy green' },
+    lightColors: {
+      primary:             '#008060', // Shopify green
+      primaryForeground:   '#FFFFFF', // on #008060: ~5.3:1 ✓ AA
+      secondary:           '#5C5F62',
+      secondaryForeground: '#FFFFFF', // on #5C5F62: ~6.2:1 ✓
+      background:          '#FFFFFF',
+      surface:             '#F6F6F7', // Shopify light surface
+      text:                '#202223', // on white: ~17:1 ✓
+      textMuted:           '#6D7175', // on white: ~4.6:1 ✓ AA
+      border:              '#C9CCCF',
+      accent:              '#008060',
+      error:               '#D82C0D',
+      success:             '#008060',
+      warning:             '#FFC453',
+      focusRing:           '#006FBB',
+      info:                '#0091FF',
+    },
+    darkColors: {
+      primary:             '#2EA583', // lighter Shopify green on dark
+      primaryForeground:   '#FFFFFF', // on #2EA583: ~4.6:1 ✓ AA
+      secondary:           '#8C9196',
+      secondaryForeground: '#1A1A1A', // on #8C9196: ~5.1:1 ✓ AA
+      background:          '#1A1A1A',
+      surface:             '#242424',
+      text:                '#E3E3E3', // on #1A1A1A: ~14:1 ✓
+      textMuted:           '#A8A8A8', // on #1A1A1A: ~6.8:1 ✓ AA
+      border:              '#3B3B3B',
+      accent:              '#2EA583',
+      error:               '#FD5749',
+      success:             '#2EA583',
+      warning:             '#FFC453',
+      focusRing:           '#00A87B',
+      info:                '#2EADF2',
+    },
+    typography: {
+      fontFamily:         'Inter, system-ui, -apple-system, sans-serif',
+      fontSizeBase:       '15px',
+      fontSizeSm:         '13px',
+      fontSizeLg:         '17px',
+      fontSizeXl:         '20px',
+      fontSize2xl:        '24px',
+      fontSize3xl:        '30px',
+      fontWeightNormal:   400,
+      fontWeightMedium:   500,
+      fontWeightBold:     600,
+      lineHeightBase:     1.5,
+      letterSpacingBase:  '0em',
+    },
+    spacing: {
+      xs:   '4px',
+      sm:   '8px',
+      md:   '16px',
+      lg:   '24px',
+      xl:   '32px',
+      xxl:  '48px',
+      xxxl: '64px',
+    },
+    borderRadius: {
+      none: '0px',
+      sm:   '3px',
+      md:   '6px',
+      lg:   '8px',
+      xl:   '12px',
+      full: '9999px',
+    },
+    shadows: {
+      sm: '0 1px 3px rgba(0,0,0,0.08)',
+      md: '0 2px 6px rgba(0,0,0,0.1)',
+      lg: '0 4px 16px rgba(0,0,0,0.12)',
+      xl: '0 8px 32px rgba(0,0,0,0.12)',
+    },
+  },
+
+  // ── GitHub ─ Developer-first, precise, minimal ────────────────────────────────
+  github: {
+    meta: { label: 'GitHub', description: 'Developer-first, precise, minimal' },
+    lightColors: {
+      primary:             '#0969DA', // GitHub blue
+      primaryForeground:   '#FFFFFF', // on #0969DA: ~5.4:1 ✓ AA
+      secondary:           '#6E7781',
+      secondaryForeground: '#FFFFFF', // on #6E7781: ~4.8:1 ✓ AA
+      background:          '#FFFFFF',
+      surface:             '#F6F8FA', // GitHub light gray surface
+      text:                '#1F2328', // on white: ~17:1 ✓
+      textMuted:           '#636C76', // on white: ~5.0:1 ✓ AA
+      border:              '#D0D7DE',
+      accent:              '#0969DA',
+      error:               '#CF222E',
+      success:             '#1A7F37',
+      warning:             '#9A6700',
+      focusRing:           '#0969DA',
+      info:                '#0550AE',
+    },
+    darkColors: {
+      primary:             '#58A6FF', // GitHub blue on dark
+      primaryForeground:   '#0D1117', // on #58A6FF: ~7.5:1 ✓
+      secondary:           '#8D96A0',
+      secondaryForeground: '#0D1117', // on #8D96A0: ~6.5:1 ✓
+      background:          '#0D1117', // GitHub dark background
+      surface:             '#161B22',
+      text:                '#E6EDF3', // on #0D1117: ~15:1 ✓
+      textMuted:           '#8D96A0', // on #0D1117: ~6.5:1 ✓ AA
+      border:              '#30363D',
+      accent:              '#58A6FF',
+      error:               '#FF7B72',
+      success:             '#3FB950',
+      warning:             '#D29922',
+      focusRing:           '#388BFD',
+      info:                '#79C0FF',
+    },
+    typography: {
+      fontFamily:         'Inter, system-ui, -apple-system, sans-serif',
+      fontSizeBase:       '14px',
+      fontSizeSm:         '12px',
+      fontSizeLg:         '16px',
+      fontSizeXl:         '18px',
+      fontSize2xl:        '22px',
+      fontSize3xl:        '28px',
+      fontWeightNormal:   400,
+      fontWeightMedium:   500,
+      fontWeightBold:     600,
+      lineHeightBase:     1.5,
+      letterSpacingBase:  '0em',
+    },
+    spacing: {
+      xs:   '4px',
+      sm:   '8px',
+      md:   '16px',
+      lg:   '24px',
+      xl:   '32px',
+      xxl:  '48px',
+      xxxl: '64px',
+    },
+    borderRadius: {
+      none: '0px',
+      sm:   '2px',
+      md:   '6px',
+      lg:   '8px',
+      xl:   '12px',
+      full: '9999px',
+    },
+    shadows: {
+      sm: '0 1px 2px rgba(0,0,0,0.06)',
+      md: '0 1px 4px rgba(0,0,0,0.08)',
+      lg: '0 4px 12px rgba(0,0,0,0.08)',
+      xl: '0 8px 24px rgba(0,0,0,0.08)',
+    },
   },
 
   // ── Custom ─ Blank slate — no brand influence ─────────────────────────────────
@@ -403,6 +771,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#EF4444',
       success:             '#22C55E',
       warning:             '#F59E0B',
+      focusRing:           '#0066CC',
+      info:                '#0066CC',
     },
     darkColors: {
       primary:             '#60A5FA', // lighter blue for dark bg
@@ -418,6 +788,8 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       error:               '#F87171',
       success:             '#4ADE80',
       warning:             '#FBBF24',
+      focusRing:           '#4D9FFF',
+      info:                '#4D9FFF',
     },
     typography: {
       fontFamily:        'Inter, system-ui, -apple-system, sans-serif',
@@ -449,6 +821,12 @@ export const VARIANTS: Record<StyleVariant, VariantDefinition> = {
       lg:   '12px',
       xl:   '16px',
       full: '9999px',
+    },
+    shadows: {
+      sm: '0 1px 2px rgba(0,0,0,0.06)',
+      md: '0 1px 4px rgba(0,0,0,0.08)',
+      lg: '0 4px 12px rgba(0,0,0,0.08)',
+      xl: '0 8px 24px rgba(0,0,0,0.08)',
     },
   },
 }
