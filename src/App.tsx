@@ -92,14 +92,14 @@ export default function App() {
               return (
                 <button
                   key={v}
-                  className={`variant-card${variant === v ? ' variant-card--selected' : ''}`}
+                  className={`variant-card${v === 'custom' ? ' variant-card--custom' : ''}${variant === v ? ' variant-card--selected' : ''}`}
                   onClick={() => setVariant(v as StyleVariant)}
                   type="button"
                   aria-pressed={variant === v}
                 >
                   <div className="variant-card__swatches" aria-hidden="true">
-                    {swatchColors.map(color => (
-                      <span key={color} className="variant-card__swatch" style={{ backgroundColor: color }} />
+                    {swatchColors.map((color, i) => (
+                      <span key={i} className="variant-card__swatch" style={{ backgroundColor: color }} />
                     ))}
                   </div>
                   <span className="variant-card__name">{def.meta.label}</span>

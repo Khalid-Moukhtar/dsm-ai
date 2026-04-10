@@ -3,7 +3,7 @@
 
 // Style variants — brand-inspired design personalities (Level 2 in the hierarchy).
 // This replaces the old ThemeCategory which incoherently mixed layout and style axes.
-export type StyleVariant = 'stripe' | 'linear' | 'notion' | 'vercel' | 'airbnb'
+export type StyleVariant = 'stripe' | 'linear' | 'notion' | 'vercel' | 'airbnb' | 'custom'
 
 // Color mode toggle — NOT a hierarchy level, just a palette switch within a variant.
 // colorMode is UI-state only — excluded from all export formats.
