@@ -1,12 +1,12 @@
-# DSM — Design System Maker
+# motif — Design Token Generator
 
 > A zero-configuration web tool for vibe-coding AI developers.
 
 ## What it does
-DSM lets developers instantly visualize "best practice" UI design system templates
+motif lets developers instantly visualize "best practice" UI design system templates
 (colors, typography, spacing, border radius), tweak them visually, and export the
-result as AI-friendly formats: a Markdown rules file, JSON design tokens, or
-CSS custom properties.
+result as AI-friendly formats: a Markdown rules file, JSON design tokens,
+CSS custom properties, or Tailwind config.
 
 ## Who it's for
 Vibe Coders and AI Developers who are starting a new project and need a fast way
@@ -20,12 +20,12 @@ to establish a consistent visual direction before asking their AI agent to build
 
 ## Core Entities
 - Theme: a named design system configuration (colors, typography, spacing, border radius)
-- ExportedDesignRules: the generated output artifact (MD/JSON/CSS string, downloaded as a file)
+- ExportedDesignRules: the generated output artifact (MD/JSON/CSS/TW v3/TW v4 string, downloaded as a file)
 
 ## Key Files
-- src/data/templates.ts       — built-in design system templates
-- src/types/theme.ts          — TypeScript types for all design tokens
-- src/utils/export.ts         — export generation (MD, JSON, CSS)
+- src/data/variants.ts           — 10 built-in design system style variants
+- src/types/theme.ts             — TypeScript types for all design tokens (44 tokens)
+- src/utils/export.ts            — export generation (MD, JSON, CSS, Tailwind v3, Tailwind v4)
 - docs/data-maps/THEME_DATA_MAP.md — the data contract
 
 ## License

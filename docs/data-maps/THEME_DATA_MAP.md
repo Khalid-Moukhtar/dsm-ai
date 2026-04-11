@@ -252,7 +252,7 @@ Browser: new Blob([content]) → URL.createObjectURL → <a download> click → 
 | Issue | Severity | Status | Found | Notes |
 |-------|----------|--------|-------|-------|
 | `layoutType`, `variant`, `colorMode` exist in Theme type but are excluded from all export formats | intentional | by design | 2026-04-09 | UI metadata only. The `toHaveLength(44)` test in `export.test.ts` enforces this — do not add any of these to `toJson()`. |
-| Markdown export has attribution header; JSON, CSS, and Tailwind exports do not | intentional | by design | 2026-04-09 | MD is the AI-prompt format; other formats are format-pure. |
+| Markdown export has attribution header + AI Instructions section + per-section usage descriptions; JSON, CSS, and Tailwind exports do not | intentional | by design | 2026-04-09 | MD is the AI-prompt format; other formats are format-pure. |
 | URL sharing only preserves color overrides (not typography/spacing/radius/shadow overrides) | intentional | by design | 2026-04-10 | Non-color overrides are complex to validate safely in URL state. Colors are the primary sharing motivation. |
 
 ---

@@ -44,7 +44,7 @@ export default function App() {
         <div className="app-header__inner">
           <div className="app-header__brand">
             <span className="app-header__logo" aria-hidden="true">◈</span>
-            <h1 className="app-header__title">DSM</h1>
+            <h1 className="app-header__title">motif</h1>
             <p className="app-header__subtitle">Pick a vibe. Export to AI.</p>
           </div>
           <div className="app-header__actions">
@@ -229,7 +229,7 @@ export default function App() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            DSM on GitHub
+            motif on GitHub
           </a>
           {' '}· MIT License
         </p>
