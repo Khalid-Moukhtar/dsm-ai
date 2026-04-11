@@ -3,14 +3,24 @@
 
 // Style variants — brand-inspired design personalities (Level 2 in the hierarchy).
 // This replaces the old ThemeCategory which incoherently mixed layout and style axes.
-export type StyleVariant = 'stripe' | 'linear' | 'notion' | 'vercel' | 'airbnb' | 'custom'
+export type StyleVariant =
+  | 'stripe'
+  | 'linear'
+  | 'notion'
+  | 'vercel'
+  | 'airbnb'
+  | 'apple'
+  | 'spotify'
+  | 'shopify'
+  | 'github'
+  | 'custom'
 
 // Color mode toggle — NOT a hierarchy level, just a palette switch within a variant.
 // colorMode is UI-state only — excluded from all export formats.
 export type ColorMode = 'light' | 'dark'
 
 // layoutType is UI-routing only — excluded from all export formats.
-// Determines which layout component renders. The toHaveLength(38) test in
+// Determines which layout component renders. The toHaveLength(44) test in
 // export.test.ts enforces that layoutType, variant, and colorMode are all excluded.
 export type LayoutType =
   | 'saas'
@@ -22,7 +32,7 @@ export type LayoutType =
   | 'community'
   | 'mobile'
 
-export type EditableSection = 'colors' | 'typography' | 'spacing' | 'borderRadius'
+export type EditableSection = 'colors' | 'typography' | 'spacing' | 'borderRadius' | 'shadows'
 
 export interface ColorPalette {
   primary: string
@@ -38,6 +48,8 @@ export interface ColorPalette {
   error: string
   success: string
   warning: string
+  focusRing: string
+  info: string
 }
 
 export interface Typography {
@@ -74,6 +86,13 @@ export interface BorderRadius {
   full: string
 }
 
+export interface Shadow {
+  sm: string
+  md: string
+  lg: string
+  xl: string
+}
+
 export interface Theme {
   id: string
   name: string
@@ -91,6 +110,7 @@ export interface Theme {
   typography: Typography
   spacing: SpacingScale
   borderRadius: BorderRadius
+  shadows: Shadow
 }
 
-export type ExportFormat = 'markdown' | 'json' | 'css'
+export type ExportFormat = 'markdown' | 'json' | 'css' | 'tailwind' | 'tailwind-v4'

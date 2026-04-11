@@ -2,6 +2,14 @@
 
 > Last updated: 2026-04-09
 
+## North Star
+
+> **"DSM is the fastest path for non-designers to go from 'I want something that looks like [X]' to a complete, AI-ready design system — in under 60 seconds, no design knowledge required."**
+
+The exported file is the handoff to an AI coding agent. Everything in DSM must serve this: fast visualization, safe defaults, one-click export.
+
+---
+
 ## What This Product Does
 
 DSM is a **published web tool** (hosted online, always-on) that lets **non-designers, vibe coders, and builders** browse realistic app and website layout previews — each fully styled with a live design system — then tweak the design tokens until the vibe feels right, and export the result as a design system file.
@@ -75,6 +83,12 @@ Each variant defines a complete design system: colors (light + dark palette), ty
 | Notion | Warm, readable, content-focused | Notion.so |
 | Vercel | Extreme contrast, precision | Vercel.com |
 | Airbnb | Warm, rounded, consumer | Airbnb.com |
+| Apple | Premium, white-space, minimal | Apple.com |
+| Spotify | Vibrant, music, bold green | Spotify.com |
+| Shopify | Clean commerce, trustworthy green | Shopify.com |
+| GitHub | Developer-first, precise, minimal | GitHub.com |
+
+All variants are layout-agnostic. A `custom` variant is also available for users who generate a palette from a seed color.
 
 ### Mode Toggle: Light ↔ Dark
 

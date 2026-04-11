@@ -1,6 +1,6 @@
 # Theme — Data Map (Lite)
 
-> **Last updated**: 2026-04-09
+> **Last updated**: 2026-04-10
 > **Tier**: 2 (Ship-Fast) — client-side only, stateless, no backend
 
 ---
@@ -13,15 +13,16 @@ The top-level entity. One Theme = one complete design system configuration.
 
 | Field | Type | Required | Source | Notes |
 |-------|------|----------|--------|-------|
-| id | string | yes | static data file | Unique slug, e.g. `"modern-saas"` |
-| name | string | yes | static data file | Display name, e.g. `"Modern SaaS"` |
-| description | string | yes | static data file | 1-sentence description shown in gallery card |
-| category | `"modern" \| "corporate" \| "dark" \| "glassmorphism"` | yes | static data file | Template category |
-| layoutType | `"saas" \| "blog" \| "landing" \| "portfolio"` | yes | static data file | **UI-routing only — excluded from all export formats.** Determines which layout component is rendered in the preview. |
-| colors | ColorPalette | yes | static / user tweaks | See ColorPalette below |
-| typography | Typography | yes | static / user tweaks | See Typography below |
-| spacing | SpacingScale | yes | static / user tweaks | See SpacingScale below |
-| borderRadius | BorderRadius | yes | static / user tweaks | See BorderRadius below |
+| id | string | yes | computed | Slug derived from `{layoutType}-{variant}-{colorMode}` |
+| name | string | yes | computed / user override | e.g. `"Stripe — SaaS"` |
+| description | string | yes | variant data | 1-sentence description |
+| variant | `StyleVariant` | yes | user selection | **UI metadata — excluded from all export formats.** |
+| colorMode | `"light" \| "dark"` | yes | user selection | **UI metadata — excluded from all export formats.** |
+| layoutType | `"saas" \| "blog" \| "landing" \| "portfolio" \| "ecommerce" \| "docs" \| "community" \| "mobile"` | yes | user selection | **UI-routing only — excluded from all export formats.** Determines which layout component renders in the preview. |
+| colors | ColorPalette | yes | variant / user tweaks | See ColorPalette below |
+| typography | Typography | yes | variant / user tweaks | See Typography below |
+| spacing | SpacingScale | yes | variant / user tweaks | See SpacingScale below |
+| borderRadius | BorderRadius | yes | variant / user tweaks | See BorderRadius below |
 
 ---
 
@@ -44,6 +45,8 @@ Embedded in Theme. All values are hex strings (e.g. `"#6366F1"`).
 | error | string (hex) | yes | template | Error state (e.g. `"#EF4444"`) |
 | success | string (hex) | yes | template | Success state (e.g. `"#22C55E"`) |
 | warning | string (hex) | yes | template | Warning state (e.g. `"#F59E0B"`) |
+| focusRing | string (hex) | yes | template | Keyboard focus outline — WCAG 2.2 SC 3.3 requires 3:1 against adjacent color (NOT 4.5:1) |
+| info | string (hex) | yes | template | Informational alerts/badges (e.g. `"#2563EB"`) |
 
 ---
 
@@ -99,15 +102,30 @@ Embedded in Theme. Values are CSS length strings.
 
 ---
 
+### Shadow
+
+Embedded in Theme. Values are CSS box-shadow strings.
+
+| Field | Type | Required | Source | Notes |
+|-------|------|----------|--------|-------|
+| sm | string | yes | variant preset | Small shadow for hover states, e.g. `"0 1px 2px rgba(0,0,0,0.06)"` |
+| md | string | yes | variant preset | Default card shadow, e.g. `"0 1px 4px rgba(0,0,0,0.08)"` |
+| lg | string | yes | variant preset | Panel / modal shadow, e.g. `"0 4px 12px rgba(0,0,0,0.08)"` |
+| xl | string | yes | variant preset | Overlay shadow, e.g. `"0 8px 24px rgba(0,0,0,0.08)"` |
+
+Presets (Flat / Subtle / Elevated / Dramatic) are applied atomically via TokenEditor. Users cannot edit individual shadow values freeform.
+
+---
+
 ### ExportedDesignRules (output artifact — not stored)
 
 Generated on demand when the user clicks Export. Never persisted.
 
 | Field | Type | Notes |
 |-------|------|-------|
-| format | `"markdown" \| "json" \| "css"` | Chosen by user at export time |
+| format | `"markdown" \| "json" \| "css" \| "tailwind" \| "tailwind-v4"` | Chosen by user at export time |
 | content | string | Generated string — the file content |
-| fileName | string | `"design_rules.md"` / `"design_tokens.json"` / `"variables.css"` |
+| fileName | string | `"design_rules.md"` / `"design_tokens.json"` / `"variables.css"` / `"tailwind.config.js"` / `"theme.css"` |
 
 **Export field name conventions** (must match exactly across all formats):
 
@@ -126,6 +144,8 @@ Generated on demand when the user clicks Export. Never persisted.
 | Error | `color_error` | `color_error` | `--color-error` |
 | Success | `color_success` | `color_success` | `--color-success` |
 | Warning | `color_warning` | `color_warning` | `--color-warning` |
+| Focus ring | `color_focus_ring` | `color_focus_ring` | `--color-focus-ring` |
+| Info | `color_info` | `color_info` | `--color-info` |
 | Font family | `font_family` | `font_family` | `--font-family` |
 | Font size base | `font_size_base` | `font_size_base` | `--font-size-base` |
 | Font size sm | `font_size_sm` | `font_size_sm` | `--font-size-sm` |
@@ -151,9 +171,15 @@ Generated on demand when the user clicks Export. Never persisted.
 | Border radius lg | `border_radius_lg` | `border_radius_lg` | `--border-radius-lg` |
 | Border radius xl | `border_radius_xl` | `border_radius_xl` | `--border-radius-xl` |
 | Border radius full | `border_radius_full` | `border_radius_full` | `--border-radius-full` |
+| Shadow sm | `shadow_sm` | `shadow_sm` | `--shadow-sm` |
+| Shadow md | `shadow_md` | `shadow_md` | `--shadow-md` |
+| Shadow lg | `shadow_lg` | `shadow_lg` | `--shadow-lg` |
+| Shadow xl | `shadow_xl` | `shadow_xl` | `--shadow-xl` |
 
-> **Note**: `layoutType` is intentionally excluded from all export formats. It is a UI-routing field only.
-> **Note**: The Markdown export includes an AI-agent framing header (blockquote + `---`) prepended before the token table. JSON and CSS exports are format-pure — no header.
+> **Total exported tokens**: 44 (15 colors + 12 typography + 7 spacing + 6 radius + 4 shadows). The `toHaveLength(44)` test in `export.test.ts` enforces this.
+> **Note**: `layoutType`, `variant`, and `colorMode` are intentionally excluded from all export formats — UI metadata only.
+> **Note**: The Markdown export includes an attribution header (Generated by DSM). JSON, CSS, and Tailwind exports are format-pure — no header.
+> **Note**: Two Tailwind export formats are supported: `tailwind` targets Tailwind CSS v3 (`module.exports`); `tailwind-v4` targets Tailwind CSS v4 (`@import "tailwindcss"; @theme { }` format, file: `theme.css`).
 
 **Status**: Stateless — generated once on demand, never stored
 
@@ -164,26 +190,29 @@ Generated on demand when the user clicks Export. Never persisted.
 No API. Fully client-side.
 
 ```
-src/data/templates.ts (static array of Theme objects)
+src/data/variants.ts (VARIANTS map: StyleVariant → VariantDefinition with light/dark palettes)
     ↓
-App loads → TemplateGallery renders cards for each template
+App loads → VariantGallery renders 10 variant cards (stripe/linear/notion/vercel/airbnb/apple/spotify/shopify/github/custom)
     ↓
-User selects template → selectedTheme state updated (React useState in useTheme hook)
+User picks Layout Type → Style Variant → Light/Dark toggle
+    ↓
+useTheme hook: computeTheme(layoutType, variant, colorMode, overrides) → Theme object
     ↓
 LayoutPreview re-renders: injects all CSS custom properties into scoped container
-    → dispatches to SaasLayout / BlogLayout / LandingLayout / PortfolioLayout
-       based on theme.layoutType
+    → dispatches to correct layout component based on theme.layoutType
+    → OR renders SystemTokensView (Tokens tab) showing all semantic tokens in UI context
     ↓
-User tweaks a token in TokenEditor → updateSection() called → state updated → LayoutPreview re-renders live
+User tweaks a token in TokenEditor → updateSection() called → overrides updated
+    → Theme recomputed → LayoutPreview re-renders live
     ↓
-User clicks Export → selects format (MD / JSON / CSS) in ExportPreview
+User clicks Export → selects format (MD / JSON / CSS / TW v3 / TW v4) in ExportPreview
     ↓
 exportTheme(theme, format) in src/utils/export.ts → generates content string
     ↓
 Browser: new Blob([content]) → URL.createObjectURL → <a download> click → file saved
 ```
 
-**Entry point**: `src/data/templates.ts` — add new templates here
+**Variant data**: `src/data/variants.ts` — add new variants here
 **Export logic**: `src/utils/export.ts` — `exportTheme(theme: Theme, format: ExportFormat): string`
 **Type definitions**: `src/types/theme.ts` — must match this data map exactly
 
@@ -200,16 +229,21 @@ Browser: new Blob([content]) → URL.createObjectURL → <a download> click → 
 
 | Component / Hook | File | Fields Used | Notes |
 |-----------------|------|-------------|-------|
-| `TemplateGallery` | `src/components/TemplateGallery.tsx` | `id, name, description, category, layoutType` | Shows horizontal strip of clickable template cards |
-| `TemplateCard` | `src/components/TemplateCard.tsx` | `id, name, description, category, layoutType` | Individual card with layout type badge |
-| `LayoutPreview` | `src/components/LayoutPreview.tsx` | All token fields + `layoutType` | Injects tokens as CSS custom properties; dispatches to correct layout component |
+| `LayoutPreview` | `src/components/LayoutPreview.tsx` | All token fields + `layoutType` | Injects tokens as CSS custom properties; dispatches to correct layout component; hosts Layout/Tokens view toggle |
+| `SystemTokensView` | `src/components/SystemTokensView.tsx` | `theme` prop (all fields) | Universal token reference panel — shows all semantic tokens in actual UI context; uses CSS vars for live updates and theme prop for spec values |
+| `ComponentsView` | `src/components/ComponentsView.tsx` | `theme` prop (theme.name for heading) | Component preview tab — Buttons / Inputs / Cards / Badges (incl. info) / Alerts / Focus ring demo; all use CSS vars |
+| `ShareButton` | `src/components/ShareButton.tsx` | `hasTheme: boolean` | Copies shareable URL (base64 URL hash) to clipboard; only renders when a theme is selected |
 | `SaasLayout` | `src/components/layouts/SaasLayout.tsx` | CSS vars via container | Renders polished SaaS dashboard mockup |
 | `BlogLayout` | `src/components/layouts/BlogLayout.tsx` | CSS vars via container | Renders polished blog/content site mockup |
 | `LandingLayout` | `src/components/layouts/LandingLayout.tsx` | CSS vars via container | Renders polished landing page mockup |
 | `PortfolioLayout` | `src/components/layouts/PortfolioLayout.tsx` | CSS vars via container | Renders polished portfolio site mockup |
-| `TokenEditor` | `src/components/TokenEditor.tsx` | All token fields (read + mutate) | Color pickers + text inputs; calls `updateSection`; shows WCAG contrast badges |
+| `EcommerceLayout` | `src/components/layouts/EcommerceLayout.tsx` | CSS vars via container | Renders polished ecommerce store mockup |
+| `DocsLayout` | `src/components/layouts/DocsLayout.tsx` | CSS vars via container | Renders polished documentation site mockup |
+| `CommunityLayout` | `src/components/layouts/CommunityLayout.tsx` | CSS vars via container | Renders polished community/forum mockup |
+| `MobileLayout` | `src/components/layouts/MobileLayout.tsx` | CSS vars via container | Renders polished mobile app mockup |
+| `TokenEditor` | `src/components/TokenEditor.tsx` | All token fields (read + mutate) | Semantic controls only (color pickers, presets, sliders — no raw CSS inputs); calls `updateSection`; shows WCAG contrast badges |
 | `ExportPreview` | `src/components/ExportPreview.tsx` | All token fields (read) | Shows export file content inline; triggers download |
-| `useTheme` | `src/hooks/useTheme.ts` | All Theme fields | Central state hook: `selectedTheme`, `selectTemplate`, `updateSection`, `resetToTemplate`, `exportTheme` |
+| `useTheme` | `src/hooks/useTheme.ts` | All Theme fields | Central state hook: `selectedTheme`, `setLayoutType`, `setVariant`, `setColorMode`, `updateSection`, `resetToVariant`, `exportTheme` |
 
 ---
 
@@ -217,5 +251,26 @@ Browser: new Blob([content]) → URL.createObjectURL → <a download> click → 
 
 | Issue | Severity | Status | Found | Notes |
 |-------|----------|--------|-------|-------|
-| `layoutType` field exists in Theme type but is excluded from all export formats | intentional | by design | 2026-04-09 | UI-routing field only. The `toHaveLength(38)` test in `export.test.ts` enforces this — do not add `layoutType` to `toJson()`. |
-| AI-agent framing header in MD export only | intentional | by design | 2026-04-09 | JSON and CSS exports are format-pure. The header is MD-only because MD is the AI-prompt format. |
+| `layoutType`, `variant`, `colorMode` exist in Theme type but are excluded from all export formats | intentional | by design | 2026-04-09 | UI metadata only. The `toHaveLength(44)` test in `export.test.ts` enforces this — do not add any of these to `toJson()`. |
+| Markdown export has attribution header; JSON, CSS, and Tailwind exports do not | intentional | by design | 2026-04-09 | MD is the AI-prompt format; other formats are format-pure. |
+| URL sharing only preserves color overrides (not typography/spacing/radius/shadow overrides) | intentional | by design | 2026-04-10 | Non-color overrides are complex to validate safely in URL state. Colors are the primary sharing motivation. |
+
+---
+
+## Token Visualization Patterns (SystemTokensView)
+
+Reference: Carbon Design System, Material 3, USWDS, Atlassian.
+
+| Token group | Visualization technique | Key insight |
+|-------------|------------------------|-------------|
+| Colors | 40×40px swatch squares | All 15 semantic colors shown including focusRing/info/error/success/warning |
+| Buttons | Live button elements | Primary / Secondary / Outline / Ghost / Disabled |
+| Status | Bordered alert boxes | Error/Success/Warning with colored left-border + icon |
+| Badges | Pill badges | All semantic colors as solid badges |
+| Form states | Three input variants | Default / Error (red border) / Success (green border) |
+| Typography | Text sample per step + spec strip | Shows `{size} · {weight}` beside sample. Body row renders **two lines** so `lineHeightBase` is visible. |
+| Font weights | Same glyph (Ag) at all 3 weights | Normal / Medium / Bold side-by-side makes weight differences obvious |
+| Letter spacing | Uppercase ABCDEF sample | Caps make tracking differences perceptible |
+| Spacing | Proportional bars | `width: var(--spacing-{token})` reads live CSS var — bars resize instantly when Density slider moves |
+| Surfaces | Background + Surface panels | Each with a nested card using the opposite surface color |
+| Border radius | Same box at all 6 radius values | None / sm / md / lg / xl / Full shapes shown together |

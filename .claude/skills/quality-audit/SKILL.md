@@ -1,5 +1,6 @@
 ---
 description: Multi-pass quality review of a plan or implementation. Run before every PR. Each pass is a focused, deep review of one category.
+argument-hint: "[plan|implementation]"
 ---
 
 # Quality Audit Skill
