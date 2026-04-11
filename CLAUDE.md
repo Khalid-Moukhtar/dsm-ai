@@ -1,4 +1,4 @@
-# DSM (Design System Maker) — AI Agent Instructions
+# motif — AI Agent Instructions
 
 > Auto-loaded at session start. Read before touching any code.
 > Domain: `docs/DOMAIN.md` | Personas: `docs/PERSONAS.md` | Data maps: `docs/data-maps/`
@@ -125,8 +125,12 @@ Before marking any task done, verify:
 ## Project Structure
 
 ```
-dsm-ai/
+motif/
 ├── CLAUDE.md                         # AI constitution (this file)
+├── README.md                         # Project overview and quickstart
+├── LICENSE                           # MIT License
+├── CONTRIBUTING.md                   # Contributor workflow and constraints
+├── SECURITY.md                       # Security policy and known surfaces
 ├── .claudeignore                     # Files excluded from AI context
 ├── llms.txt                          # Machine-readable project summary
 ├── docs/
