@@ -14,8 +14,10 @@ export function ComponentsView({ theme }: Props) {
     <div className="cv-root">
       <h3 className="cv-heading">{theme.name} — Components</h3>
 
-      {/* ── Buttons ─────────────────────────────────────────────────────── */}
-      <section className="cv-section">
+      <div className="cv-grid">
+
+      {/* ── Buttons — full width ────────────────────────────────────────── */}
+      <section className="cv-section cv-section--full">
         <h4 className="cv-section-title">Buttons</h4>
         <div className="cv-row">
           <button type="button" tabIndex={-1} className="cv-btn cv-btn--primary">Primary</button>
@@ -83,11 +85,12 @@ export function ComponentsView({ theme }: Props) {
           <span className="cv-badge cv-badge--error">Error</span>
           <span className="cv-badge cv-badge--warning">Warning</span>
           <span className="cv-badge cv-badge--info">Info</span>
+          <span className="cv-badge cv-badge--accent">Accent</span>
         </div>
       </section>
 
-      {/* ── Alerts ──────────────────────────────────────────────────────── */}
-      <section className="cv-section">
+      {/* ── Alerts — full width ─────────────────────────────────────────── */}
+      <section className="cv-section cv-section--full">
         <h4 className="cv-section-title">Alerts</h4>
         <div className="cv-col">
           <div className="cv-alert cv-alert--info" role="status">
@@ -119,6 +122,8 @@ export function ComponentsView({ theme }: Props) {
           </button>
         </div>
       </section>
+      </div>{/* end cv-grid */}
+
     </div>
   )
 }
