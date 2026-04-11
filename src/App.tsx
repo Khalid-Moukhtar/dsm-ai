@@ -225,7 +225,7 @@ export default function App() {
       <footer className="app-footer">
         <p>
           <a
-            href="https://github.com/Khalid-Moukhtar/dsm-ai"
+            href="https://github.com/Khalid-Moukhtar/motif"
             target="_blank"
             rel="noopener noreferrer"
           >

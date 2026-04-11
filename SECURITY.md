@@ -17,7 +17,7 @@ Fonts CDN (typography preview only).
 ## Reporting
 
 If you discover a security issue, please open a
-[GitHub Issue](https://github.com/Khalid-Moukhtar/dsm-ai/issues) with the label `security`.
+[GitHub Issue](https://github.com/Khalid-Moukhtar/motif/issues) with the label `security`.
 For sensitive disclosures, use GitHub's private vulnerability reporting feature
 (Security tab -> Report a vulnerability).
 

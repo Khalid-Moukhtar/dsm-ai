@@ -17,7 +17,7 @@ motif is a zero-configuration web tool for vibe coders and AI developers. Pick a
 
 ## Quickstart
 
-    git clone https://github.com/Khalid-Moukhtar/dsm-ai.git motif
+    git clone https://github.com/Khalid-Moukhtar/motif.git
     cd motif
     pnpm install
     pnpm dev

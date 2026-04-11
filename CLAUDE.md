@@ -125,7 +125,7 @@ Before marking any task done, verify:
 ## Project Structure
 
 ```
-dsm-ai/
+motif/
 ├── CLAUDE.md                         # AI constitution (this file)
 ├── README.md                         # Project overview and quickstart
 ├── LICENSE                           # MIT License
