@@ -4,7 +4,7 @@
 **ALWAYS use `pnpm`** — never npm, yarn, or bun.
 
 ## Project Status
-- **Stage**: Feature-complete v1 — all 8 layouts, 6 variants, shadow tokens, Tailwind export, Google Fonts loading, secondary foreground controls, SystemTokensView, export (MD/JSON/CSS/Tailwind)
+- **Stage**: v1 feature-complete + product gap closure — all 8 layouts, 10 variants, 15 color tokens, 44 exported tokens, all 5 export formats, OSS readiness done (README/LICENSE/CONTRIBUTING/SECURITY), rebranded to "motif"
 - **In flight**: Deploy to production (Vercel or GitHub Pages)
 - **Deploy**: CI/CD via GitHub Actions (host TBD — Vercel or GitHub Pages are candidates)
 - **Live URL**: Not yet deployed
@@ -45,7 +45,7 @@ Mode Toggle: Light ↔ Dark (not a hierarchy level — a toggle on the selected 
 saas | landing | blog | ecommerce | portfolio | docs | community | mobile
 
 ### Style Variants (brand-inspired, shown as cards — NOT a dropdown):
-stripe | linear | notion | vercel | airbnb | custom
+stripe | linear | notion | vercel | airbnb | apple | spotify | shopify | github | custom
 
 Each variant defines: complete light color palette + complete dark color palette + typography + spacing + border radius + shadows.
 
@@ -143,4 +143,4 @@ If any product decision, requirement, or code direction is wrong or incoherent, 
 - Font loading: id-guarded useEffect in LayoutPreview, 5-font Google Fonts allowlist, no cleanup (prevents FOUT)
 - safeFontFamily() fix: strips surrounding quotes from each font token before allowlist check — "Space Grotesk" etc. now export correctly in MD and CSS
 - secondaryForeground: now has ColorRow in Brand group + ContrastBadge in WCAG summary
-- JSON token count: 42 (was 38) — 13 colors + 12 typography + 7 spacing + 6 radius + 4 shadows
+- JSON token count: 44 — 15 colors + 12 typography + 7 spacing + 6 radius + 4 shadows (focusRing + info added in PR #6)
