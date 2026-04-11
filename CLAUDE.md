@@ -19,21 +19,7 @@
 12. **Non-designer mandate** — EVERY UI control for non-color tokens must use semantic controls (sliders, presets, dropdowns), not raw CSS value inputs. Non-designers do not know what "16px", "1.5", or "0em" mean. See docs/DOMAIN.md "Non-Designer UX Mandate" for the full spec. Never revert to freeform text inputs for spacing, radius, or typography tokens.
 13. **Google Fonts allowed** — the tool is online-first. Google Fonts CDN may be used for typography in layout previews and as exported font stacks in templates. No other external runtime dependencies.
 14. **NEVER edit a merged or closed PR** — `gh pr edit` on a merged PR is a no-op at best and misleading at worst. Before any `gh pr edit <number>`, verify state: `gh pr view <number> --json state -q .state`. If the output is `MERGED` or `CLOSED`, stop. Do not edit.
-15. **Skills are mandatory, not optional** — the `/pr` skill MUST be invoked via the Skill tool before any `gh pr create`. Running CI steps manually and writing a PR body from scratch is a rule violation even if every step is technically executed. The skill exists to enforce the template and checklist — bypassing it by "knowing the steps" is exactly the failure mode it prevents.
-
-## Canonical Workflows
-
-| Task type | Skill |
-|-----------|-------|
-| Bug fix, audit finding, security patch | `/bugfix` |
-| New feature, new module | `/feature` |
-| Quality review (plan or code) | `/quality-audit` |
-| CI gate + PR creation | `/pr` |
-
-**Rule**: Every task follows a skill. Do not improvise.
-**Rule**: Invoking a skill means calling the Skill tool — not executing the steps from memory.
-**Rule**: Read the Data Map FIRST — `docs/data-maps/THEME_DATA_MAP.md` — before touching source code.
-**Rule**: There is NO backend. Every feature must work purely in the browser.
+15. **Read the Data Map first** — before touching any token-related source code, read `docs/data-maps/THEME_DATA_MAP.md`. The Data Map is the contract.
 
 ## Common Implementation Checklist
 
@@ -62,7 +48,7 @@ Before marking any task done, verify:
 | New export format or field | Update `THEME_DATA_MAP.md` Section 2 (Data Flow) + Section 3 (Frontend Consumers) |
 | New variant or layout type added | Update `THEME_DATA_MAP.md` + `docs/DOMAIN.md` (Business Rules) |
 | New route or page | Update `docs/INDEX.md` routing table |
-| Bug fix revealing a systemic pattern | Add to CLAUDE.md Critical Patterns + `memory/project_context.md` |
+| Bug fix revealing a systemic pattern | Add to CLAUDE.md Critical Patterns |
 
 ## Critical Patterns
 
@@ -87,7 +73,7 @@ Before marking any task done, verify:
 - **Contrast warnings**: show a badge on the preview, but do not block export
 
 ### Security
-- **Security Threat Model is mandatory for every new feature** — answer the 6 questions in `/feature` Step 2 before writing code. Document answers in the plan.
+- **Security Threat Model is mandatory for every new feature** — document the threat model before writing code: (1) what user input reaches the DOM, (2) how it's validated, (3) whether it appears in exports, (4) injection vectors, (5) download filename derivation, (6) any new network requests.
 - **React does NOT sanitize CSS custom property values.** Values in `style={{ '--color-primary': val }}` go verbatim to the DOM. The `TokenEditor` validation layer is the SOLE defense. Treat it as mandatory, not optional UX.
 - **CSS injection risk — validation rules by token type**:
   - Hex colors: `/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/` — reject and keep last valid on failure
@@ -97,11 +83,11 @@ Before marking any task done, verify:
   - Letter spacing: `/^-?\d+(\.\d+)?(px|em|rem)$/` — reject on failure
   - **Font family — allowlist ONLY**: `/^[a-zA-Z0-9 ,\-_.']+$/` max 100 chars. Use literal space `[ ]`, NOT `\s` — `\s` matches `\n` which is an injection vector. Do NOT use a strip list (misses `@`, `(`, `)`, `/`, `*`). Reject and revert on failure.
 - **Initial variant values are the trust boundary.** Variant values in `variants.ts` bypass `TokenEditor` validation. Every string in `variants.ts` must be manually verified as clean. The file has a security comment to this effect.
-- **Prompt injection risk in exports**: DSM exports Markdown consumed by AI agents. `fontFamily` (user-editable) must pass the allowlist before appearing in MD or CSS exports. Fall back to `'system-ui'` if it fails at export time. `JSON.stringify` handles escaping for JSON — no additional sanitization needed there.
+- **Prompt injection risk in exports**: motif exports Markdown consumed by AI agents. `fontFamily` (user-editable) must pass the allowlist before appearing in MD or CSS exports. Fall back to `'system-ui'` if it fails at export time. `JSON.stringify` handles escaping for JSON — no additional sanitization needed there.
 - **Color picker `onChange` MUST be debounced**: Use `useRef` to hold the `setTimeout` timer (80ms). Clear in `useEffect` cleanup to prevent post-unmount state updates. Do NOT call `updateSection` on every color picker pixel — use debounce or `startTransition`.
 - **Download filename**: NEVER derive the download filename from user input. Use hardcoded names only (`design_rules.md`, `design_tokens.json`, `variables.css`, `tailwind.config.js`, `theme.css`).
 - **Dependency discipline**: Prefer zero new dependencies for utility functions (hex validation, contrast math are simple enough inline). When adding any dependency, run `pnpm audit` and check for CRITICAL/HIGH CVEs before merge.
-- **No network requests**: DSM is offline-first. Any `fetch()`, `XMLHttpRequest`, or external URL reference is a flag — get explicit approval before adding it.
+- **No network requests**: motif is offline-first. Any `fetch()`, `XMLHttpRequest`, or external URL reference is a flag — get explicit approval before adding it.
 
 ### Build & Config
 - **Two separate config files**: `vite.config.ts` imports from `'vite'`; `vitest.config.ts` imports from `'vitest/config'`. Never merge them — `vitest/config` ships Vite 5 internally and causes type conflicts with Vite 6.
@@ -127,6 +113,7 @@ Before marking any task done, verify:
 ```
 motif/
 ├── CLAUDE.md                         # AI constitution (this file)
+├── AGENTS.md                         # AI agent contributor guide (Claude Code ignores via .claudeignore)
 ├── README.md                         # Project overview and quickstart
 ├── LICENSE                           # MIT License
 ├── CONTRIBUTING.md                   # Contributor workflow and constraints
@@ -141,17 +128,12 @@ motif/
 │       ├── INDEX.md                  # Data map index
 │       └── THEME_DATA_MAP.md         # Core data contract
 ├── .claude/
-│   └── skills/                       # Executable AI workflows
-│       ├── bugfix/SKILL.md
-│       ├── feature/SKILL.md
-│       ├── pr/SKILL.md
-│       └── quality-audit/SKILL.md
+│   └── settings.json                 # Local machine settings (gitignored)
 ├── .github/
 │   ├── workflows/ci.yml              # CI pipeline
 │   └── PULL_REQUEST_TEMPLATE.md     # PR quality checklist
 ├── memory/
-│   ├── project_context.md           # Decisions log + cross-session history
-│   └── MEMORY.md                     # Active session memory (auto-loaded by Claude)
+│   └── MEMORY.md                     # Active session memory (gitignored, local only)
 ├── src/
 │   ├── main.tsx                      # App entry point
 │   ├── App.tsx                       # Root component
@@ -197,7 +179,7 @@ motif/
 
 - **No server**: Any feature requiring a backend server is out of scope. Export = client-side file download only.
 - **Google Fonts is the only allowed external CDN**: Any other `fetch()`, `XMLHttpRequest`, or external URL reference needs explicit approval.
-- **Community contributors**: This is open source. Do not merge PRs that bypass the skill workflows or skip CI.
+- **Community contributors**: This is open source. Do not merge PRs that skip CI (type check, lint, build, tests must all pass).
 - **Contrast checker**: Do not use third-party contrast libraries unless vetted — the calculation is simple enough to implement inline (WCAG formula uses relative luminance).
 - **Template hierarchy**: Layout type ≠ color scheme. "Dark mode" is a toggle, not a template. "Glassmorphism" is a style variant, not a layout. Never conflate these axes. See docs/DOMAIN.md for the canonical template hierarchy.
 - **Non-designer controls**: Never add freeform text inputs for spacing, radius, typography, or any non-color token. The user cannot evaluate raw CSS values. Use sliders, steppers, and presets. See docs/DOMAIN.md Non-Designer UX Mandate.
