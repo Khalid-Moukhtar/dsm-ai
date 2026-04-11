@@ -2,6 +2,8 @@
 // Tab state is local. Export string is memoized per theme + format.
 
 import { useState, useMemo } from 'react'
+
+const HANDOFF_PROMPT = `I have a design system in the attached file. Use these tokens for all UI — never hardcode colors, spacing, or typography values. When I ask to change something visual, update the token, not individual instances.`
 import type { Theme, ExportFormat } from '../types/theme'
 import { exportTheme, getFileName, downloadTheme } from '../utils/export'
 
@@ -20,6 +22,7 @@ const FORMATS: { id: ExportFormat; label: string; tooltip: string }[] = [
 export function ExportPreview({ theme }: Props) {
   const [activeFormat, setActiveFormat] = useState<ExportFormat>('markdown')
   const [copied, setCopied] = useState(false)
+  const [promptCopied, setPromptCopied] = useState(false)
 
   const exportString = useMemo(
     () => exportTheme(theme, activeFormat),
@@ -43,6 +46,12 @@ export function ExportPreview({ theme }: Props) {
     await navigator.clipboard.writeText(exportString)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
+  }
+
+  async function handleCopyPrompt() {
+    await navigator.clipboard.writeText(HANDOFF_PROMPT)
+    setPromptCopied(true)
+    setTimeout(() => setPromptCopied(false), 1500)
   }
 
   const tabId = (format: ExportFormat) => `export-tab-${format}`
@@ -109,6 +118,25 @@ export function ExportPreview({ theme }: Props) {
           ↓ Download
         </button>
       </div>
+
+      {/* Post-export guidance — shown only on markdown tab (the AI agent handoff format) */}
+      {activeFormat === 'markdown' && (
+        <div className="export-handoff">
+          <p className="export-handoff__title">Now what?</p>
+          <p className="export-handoff__desc">
+            Paste this prompt + the file into Claude, Cursor, or your AI agent:
+          </p>
+          <div className="export-handoff__prompt">{HANDOFF_PROMPT}</div>
+          <button
+            className="export-handoff__copy-btn"
+            onClick={handleCopyPrompt}
+            type="button"
+            aria-label="Copy AI agent prompt to clipboard"
+          >
+            {promptCopied ? '✓ Copied!' : '⎘ Copy prompt'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
