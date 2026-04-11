@@ -1,0 +1,47 @@
+name: PR template check
+
+# Blocks merge if the PR body is missing required template sections.
+# No checkout or install needed — reads directly from the event payload.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, ready_for_review, synchronize]
+
+jobs:
+  check-pr-body:
+    name: Verify PR follows template
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check required sections
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "Checking PR body for required template sections..."
+          missing=()
+
+          check_section() {
+            if ! printf '%s' "$PR_BODY" | grep -qF "$1"; then
+              missing+=("$1")
+            fi
+          }
+
+          check_section "## Summary"
+          check_section "## Changes"
+          check_section "## Data Map Updates"
+          check_section "## Quality Checklist"
+          check_section "### CI Gate"
+          check_section "### Documentation Sync"
+
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "PR body is missing required template sections:"
+            for section in "${missing[@]}"; do
+              echo "  - $section"
+            done
+            echo ""
+            echo "See .github/PULL_REQUEST_TEMPLATE.md for the required format."
+            echo "Use the /pr skill — never write PR bodies from scratch."
+            exit 1
+          fi
+
+          echo "All required template sections present."
