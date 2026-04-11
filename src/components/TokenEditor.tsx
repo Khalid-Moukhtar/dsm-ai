@@ -442,6 +442,14 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
               tooltip="Draws attention to something that needs review but isn't a critical error." />
           </div>
 
+          <div className="te-color-group">
+            <p className="te-color-group__label" data-tooltip="Accessibility and notification colors — focus state and informational context.">Focus & Info</p>
+            <ColorRow id="color-focus-ring" label="Focus ring"  value={colors.focusRing} onChange={setColor('focusRing')}
+              tooltip="The outline color shown on interactive elements when navigating by keyboard. WCAG 2.2 requires 3:1 contrast against adjacent colors." />
+            <ColorRow id="color-info"       label="Info"        value={colors.info}       onChange={setColor('info')}
+              tooltip="Used for informational banners, alerts, and badges — non-critical notifications." />
+          </div>
+
           <div className="te-contrast-summary">
             <p className="te-contrast-summary__title">WCAG AA Contrast</p>
             <ContrastBadge
