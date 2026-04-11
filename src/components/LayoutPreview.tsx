@@ -170,7 +170,10 @@ export function LayoutPreview({ theme }: Props) {
     >
       {/* Header: label + scale toggle + expand button — NOT aria-hidden, keyboard accessible */}
       <div className="layout-preview__header">
-        <span className="layout-preview__label">{theme.name}</span>
+        <div className="layout-preview__header-left">
+          <span className="layout-preview__label">{theme.name}</span>
+          <span className="layout-preview__preview-badge" aria-hidden="true">Preview</span>
+        </div>
         <div className="layout-preview__header-actions">
           <div className="layout-preview__view-toggle" role="group" aria-label="Preview mode">
             <button
