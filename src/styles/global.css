@@ -2863,22 +2863,42 @@ details[open] .te-section__summary::after {
 .layout-preview__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 5px 8px 5px 12px;
+  background: #e8eaed;
+  border-bottom: 1px solid #c9cdd4;
+  padding: 6px 8px 6px 12px;
   gap: 8px;
 }
 
 .layout-preview__label {
   font-size: 0.6875rem;
   font-weight: 500;
-  color: #9ca3af;
+  color: #4b5563; /* #4b5563 on #e8eaed = ~6:1 — WCAG AA for 11px */
   letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+}
+
+.layout-preview__header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.layout-preview__preview-badge {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #4b5563; /* ~4:1 on #d1d5db — legible for sighted users */
+  background: #d1d5db;
+  border-radius: 3px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+  line-height: 1.6;
 }
 
 .layout-preview__header-actions {
@@ -2896,12 +2916,12 @@ details[open] .te-section__summary::after {
 }
 
 .layout-preview__scale-btn {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   color: #9ca3af;
   background: transparent;
   border: none;
-  padding: 2px 6px;
+  padding: 3px 7px;
   cursor: pointer;
   transition: background 0.1s, color 0.1s;
   line-height: 1.6;
@@ -2909,7 +2929,7 @@ details[open] .te-section__summary::after {
 
 .layout-preview__scale-btn:hover { background: #f3f4f6; color: #374151; }
 
-.layout-preview__scale-btn--active { background: #f3f4f6; color: #374151; font-weight: 600; }
+.layout-preview__scale-btn--active { background: #d1d5db; color: #1f2937; font-weight: 600; }
 
 .layout-preview__scale-btn:focus-visible {
   outline: 2px solid #6366F1;
@@ -2952,6 +2972,23 @@ details[open] .te-section__summary::after {
   min-height: 100dvh;
   overflow: auto;
 }
+
+/* Scene: inset border frames it as a contained preview window (Figma/Storybook pattern) */
+.layout-preview__scene {
+  box-shadow: inset 0 0 0 1px #d1d5db;
+  pointer-events: none; /* decorative fake UI: no hover, no click */
+}
+
+/* Re-enable pointer-events on elements that actually call onPageChange */
+.layout-preview__scene .layout-tab,                 /* DocsLayout, CommunityLayout */
+.layout-preview__scene .saas-sidebar__nav-item,     /* SaasLayout */
+.layout-preview__scene .blog-header__nav-item,      /* BlogLayout */
+.layout-preview__scene .landing-header__nav-item,   /* LandingLayout */
+.layout-preview__scene .portfolio-header__nav-item, /* PortfolioLayout */
+.layout-preview__scene .ecom-header__nav-link,      /* EcommerceLayout */
+.layout-preview__scene .ecom-header__icon-btn,      /* EcommerceLayout cart */
+.layout-preview__scene .mobile-bottom-nav__item     /* MobileLayout */
+{ pointer-events: auto; }
 
 .layout-preview--expanded .layout-preview__scene {
   min-height: calc(100dvh - 36px);
@@ -4882,6 +4919,9 @@ details[open] .te-section__summary::after {
     max-height: none;
   }
 
+  /* Restore touch events in preview scene on mobile — pointer-events:none also blocks touch */
+  .layout-preview__scene { pointer-events: auto; }
+
   .saas-stats { grid-template-columns: repeat(2, 1fr); }
 
   .landing-features__grid { grid-template-columns: 1fr; }
@@ -4920,8 +4960,9 @@ body.dsm-dark .app-empty-step__text strong { color: #e6edf3; }
 body.dsm-dark .app-empty-step__text p  { color: #8b949e; }
 
 /* Layout preview header (scene is aria-hidden, uses its own CSS vars) */
-body.dsm-dark .layout-preview__header      { background: #21262d; border-bottom-color: #30363d; }
-body.dsm-dark .layout-preview__label       { color: #656d76; }
+body.dsm-dark .layout-preview__header      { background: #21262d; border-bottom-color: #3d444d; }
+body.dsm-dark .layout-preview__label       { color: #8b949e; }
+body.dsm-dark .layout-preview__preview-badge { color: #8b949e; background: #30363d; }
 body.dsm-dark .layout-preview__expand-btn  { color: #8b949e; }
 body.dsm-dark .layout-preview__expand-btn:hover { background: #30363d; color: #e6edf3; }
 
@@ -4989,7 +5030,7 @@ body.dsm-dark .layout-preview__scale-btn--active { background: #30363d; color: #
 /* ── Layout preview view toggle (Layout / Tokens) ───────── */
 .layout-preview__view-toggle {
   display: flex;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #c9cdd4;
   border-radius: 5px;
   /* overflow:hidden removed — was clipping data-tooltip::before on child buttons */
 }
@@ -5005,25 +5046,26 @@ body.dsm-dark .layout-preview__scale-btn--active { background: #30363d; color: #
 }
 
 .layout-preview__view-btn {
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: #9ca3af;
   background: transparent;
   border: none;
-  padding: 2px 8px;
+  padding: 3px 10px;
   cursor: pointer;
   transition: background 0.1s, color 0.1s;
   line-height: 1.6;
 }
 
 .layout-preview__view-btn:hover { background: #f3f4f6; color: #374151; }
-.layout-preview__view-btn--active { background: #f3f4f6; color: #374151; font-weight: 600; }
+.layout-preview__view-btn--active { background: #6366F1; color: #fff; font-weight: 600; }
 .layout-preview__view-btn:focus-visible { outline: 2px solid #6366F1; outline-offset: -1px; }
 
-body.dsm-dark .layout-preview__view-toggle { border-color: #30363d; }
+body.dsm-dark .layout-preview__view-toggle { border-color: #3d444d; }
 body.dsm-dark .layout-preview__view-btn    { color: #656d76; }
 body.dsm-dark .layout-preview__view-btn:hover { background: #30363d; color: #c9d1d9; }
-body.dsm-dark .layout-preview__view-btn--active { background: #30363d; color: #c9d1d9; }
+body.dsm-dark .layout-preview__view-btn--active { background: rgba(99,102,241,0.22); color: #a5b4fc; } /* indigo tint */
+body.dsm-dark .layout-preview__scene { box-shadow: inset 0 0 0 1px #30363d; }
 
 /* ── SystemTokensView ───────────────────────────────────── */
 .stv {
