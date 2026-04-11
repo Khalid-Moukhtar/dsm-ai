@@ -1,0 +1,32 @@
+# DSM — Design System Maker
+
+> A zero-configuration web tool for vibe-coding AI developers.
+
+## What it does
+DSM lets developers instantly visualize "best practice" UI design system templates
+(colors, typography, spacing, border radius), tweak them visually, and export the
+result as AI-friendly formats: a Markdown rules file, JSON design tokens, or
+CSS custom properties.
+
+## Who it's for
+Vibe Coders and AI Developers who are starting a new project and need a fast way
+to establish a consistent visual direction before asking their AI agent to build the UI.
+
+## Tech Stack
+- Frontend: Vite + React 18 + TypeScript
+- Styling: Vanilla CSS with CSS custom properties
+- Package manager: pnpm
+- No backend — 100% client-side, works offline
+
+## Core Entities
+- Theme: a named design system configuration (colors, typography, spacing, border radius)
+- ExportedDesignRules: the generated output artifact (MD/JSON/CSS string, downloaded as a file)
+
+## Key Files
+- src/data/templates.ts       — built-in design system templates
+- src/types/theme.ts          — TypeScript types for all design tokens
+- src/utils/export.ts         — export generation (MD, JSON, CSS)
+- docs/data-maps/THEME_DATA_MAP.md — the data contract
+
+## License
+MIT — open source, community contributions welcome (see CONTRIBUTING.md)
