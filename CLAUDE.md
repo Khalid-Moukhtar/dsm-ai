@@ -18,6 +18,8 @@
 11. **CALL BS** — if a product decision, architectural choice, or requirement is wrong, incoherent, or will lead the product in the wrong direction, say so directly and immediately. Do not implement something you know is wrong just because it was requested. Explain the issue, propose the correct alternative. This is a standing rule with the same weight as "never guess."
 12. **Non-designer mandate** — EVERY UI control for non-color tokens must use semantic controls (sliders, presets, dropdowns), not raw CSS value inputs. Non-designers do not know what "16px", "1.5", or "0em" mean. See docs/DOMAIN.md "Non-Designer UX Mandate" for the full spec. Never revert to freeform text inputs for spacing, radius, or typography tokens.
 13. **Google Fonts allowed** — the tool is online-first. Google Fonts CDN may be used for typography in layout previews and as exported font stacks in templates. No other external runtime dependencies.
+14. **NEVER edit a merged or closed PR** — `gh pr edit` on a merged PR is a no-op at best and misleading at worst. Before any `gh pr edit <number>`, verify state: `gh pr view <number> --json state -q .state`. If the output is `MERGED` or `CLOSED`, stop. Do not edit.
+15. **Skills are mandatory, not optional** — the `/pr` skill MUST be invoked via the Skill tool before any `gh pr create`. Running CI steps manually and writing a PR body from scratch is a rule violation even if every step is technically executed. The skill exists to enforce the template and checklist — bypassing it by "knowing the steps" is exactly the failure mode it prevents.
 
 ## Canonical Workflows
 
@@ -29,6 +31,7 @@
 | CI gate + PR creation | `/pr` |
 
 **Rule**: Every task follows a skill. Do not improvise.
+**Rule**: Invoking a skill means calling the Skill tool — not executing the steps from memory.
 **Rule**: Read the Data Map FIRST — `docs/data-maps/THEME_DATA_MAP.md` — before touching source code.
 **Rule**: There is NO backend. Every feature must work purely in the browser.
 
