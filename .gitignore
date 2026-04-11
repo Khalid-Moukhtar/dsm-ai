@@ -1,33 +1,40 @@
 # Dependencies
 node_modules/
 
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Build outputs
+# Build output
 dist/
 build/
 out/
 lib/
+coverage/
 
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/settings.json
-.idea/
-
-# Credentials
+# Environment / secrets
+.env
+.env.local
+.env.*.local
 *.pem
 *.key
 credentials.json
 service-account*.json
 
-# Test output
-coverage/
-
 # Logs
 *.log
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/settings.json
+.idea/
+
+# Claude Code -- machine-specific settings and AI workflow methodology
+.claude/settings.json
+.claude/skills/
+
+# Session memory -- internal agent notes, not contributor docs
+memory/

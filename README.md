@@ -22,7 +22,7 @@ motif is a zero-configuration web tool for vibe coders and AI developers. Pick a
     pnpm install
     pnpm dev
 
-Open http://localhost:5173
+Open the URL printed in your terminal.
 
 > Requires Node.js 20+ and pnpm.
 
