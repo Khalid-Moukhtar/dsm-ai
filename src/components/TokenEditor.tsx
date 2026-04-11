@@ -5,7 +5,7 @@
 // All other controls: sliders, presets, dropdowns — NEVER freeform text.
 
 import { useRef, useEffect, useState } from 'react'
-import type { Theme, EditableSection, ColorPalette } from '../types/theme'
+import type { Theme, EditableSection, ColorPalette, Shadow } from '../types/theme'
 import { contrastRatio, passesWcagAA, suggestPassingColor } from '../utils/contrast'
 
 export interface TokenEditorProps {
@@ -121,6 +121,49 @@ function getRadiusPresetId(borderRadiusMd: string): string {
   return 'rounded'
 }
 
+// ── Shadow / elevation presets ─────────────────────────────────────────────────
+const SHADOW_PRESETS: { id: string; label: string; shadows: Shadow }[] = [
+  {
+    id: 'flat',
+    label: 'Flat',
+    shadows: { sm: 'none', md: 'none', lg: 'none', xl: 'none' },
+  },
+  {
+    id: 'subtle',
+    label: 'Subtle',
+    shadows: {
+      sm: '0 1px 2px rgba(0,0,0,0.06)',
+      md: '0 1px 4px rgba(0,0,0,0.08)',
+      lg: '0 4px 12px rgba(0,0,0,0.08)',
+      xl: '0 8px 24px rgba(0,0,0,0.08)',
+    },
+  },
+  {
+    id: 'elevated',
+    label: 'Elevated',
+    shadows: {
+      sm: '0 1px 3px rgba(0,0,0,0.1)',
+      md: '0 4px 8px rgba(0,0,0,0.1)',
+      lg: '0 8px 24px rgba(0,0,0,0.12)',
+      xl: '0 16px 48px rgba(0,0,0,0.12)',
+    },
+  },
+  {
+    id: 'dramatic',
+    label: 'Dramatic',
+    shadows: {
+      sm: '0 2px 6px rgba(0,0,0,0.18)',
+      md: '0 8px 20px rgba(0,0,0,0.18)',
+      lg: '0 16px 40px rgba(0,0,0,0.22)',
+      xl: '0 24px 64px rgba(0,0,0,0.22)',
+    },
+  },
+]
+
+function getShadowPresetId(shadowMd: string): string {
+  return SHADOW_PRESETS.find(p => p.shadows.md === shadowMd)?.id ?? 'subtle'
+}
+
 // ── Color row ──────────────────────────────────────────────────────────────────
 
 interface ColorRowProps {
@@ -128,9 +171,10 @@ interface ColorRowProps {
   label: string
   value: string
   onChange: (hex: string) => void
+  tooltip?: string
 }
 
-function ColorRow({ id, label, value, onChange }: ColorRowProps) {
+function ColorRow({ id, label, value, onChange, tooltip }: ColorRowProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>()
   const [draft, setDraft] = useState(value)
   const [error, setError] = useState('')
@@ -172,7 +216,7 @@ function ColorRow({ id, label, value, onChange }: ColorRowProps) {
 
   return (
     <div className="te-color-row">
-      <label className="te-color-label" htmlFor={`${id}-text`}>{label}</label>
+      <label className="te-color-label" htmlFor={`${id}-text`} data-tooltip={tooltip}>{label}</label>
       <div className="te-color-controls">
         <label className="te-swatch-label" htmlFor={`${id}-picker`}>
           <input
@@ -252,13 +296,14 @@ interface SliderControlProps {
   stops: { label: string }[]
   value: number
   onChange: (index: number) => void
+  tooltip?: string
 }
 
-function SliderControl({ id, label, stops, value, onChange }: SliderControlProps) {
+function SliderControl({ id, label, stops, value, onChange, tooltip }: SliderControlProps) {
   return (
     <div className="te-slider-row">
       <div className="te-slider-header">
-        <label className="te-slider-label" htmlFor={id}>{label}</label>
+        <label className="te-slider-label" htmlFor={id} data-tooltip={tooltip}>{label}</label>
         <span className="te-slider-value">{stops[value]?.label ?? ''}</span>
       </div>
       <input
@@ -284,7 +329,7 @@ function SliderControl({ id, label, stops, value, onChange }: SliderControlProps
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps) {
-  const { colors, typography, spacing, borderRadius } = theme
+  const { colors, typography, spacing, borderRadius, shadows } = theme
 
   function setColor(key: keyof ColorPalette) {
     return (hex: string) => updateSection('colors', { [key]: hex } as Partial<ColorPalette>)
@@ -339,6 +384,12 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
     if (preset) updateSection('borderRadius', { ...preset.radius })
   }
 
+  const shadowPresetId = getShadowPresetId(shadows.md)
+  function handleShadowPreset(id: string) {
+    const preset = SHADOW_PRESETS.find(p => p.id === id)
+    if (preset) updateSection('shadows', { ...preset.shadows })
+  }
+
   return (
     <div className="token-editor">
       <div className="token-editor__header">
@@ -353,28 +404,42 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
         <summary className="te-section__summary">Colors</summary>
         <div className="te-section__body">
           <div className="te-color-group">
-            <p className="te-color-group__label">Brand</p>
-            <ColorRow id="color-primary"    label="Primary"      value={colors.primary}           onChange={setColor('primary')} />
-            <ColorRow id="color-primary-fg" label="Primary text" value={colors.primaryForeground} onChange={setColor('primaryForeground')} />
-            <ColorRow id="color-secondary"  label="Secondary"    value={colors.secondary}         onChange={setColor('secondary')} />
+            <p className="te-color-group__label" data-tooltip="Your core brand colors — the most prominent colors in your UI.">Brand</p>
+            <ColorRow id="color-primary"       label="Primary"        value={colors.primary}             onChange={setColor('primary')}
+              tooltip="Your main brand color — used for primary buttons, links, and key actions." />
+            <ColorRow id="color-primary-fg"    label="Primary text"   value={colors.primaryForeground}   onChange={setColor('primaryForeground')}
+              tooltip="Text or icons shown on top of the primary color, e.g. a button label. Must be readable against it." />
+            <ColorRow id="color-secondary"     label="Secondary"      value={colors.secondary}           onChange={setColor('secondary')}
+              tooltip="A supporting color for less prominent actions and elements — think secondary buttons or tags." />
+            <ColorRow id="color-secondary-fg"  label="Secondary text" value={colors.secondaryForeground} onChange={setColor('secondaryForeground')}
+              tooltip="Text shown on top of the secondary color. Must be readable against it." />
           </div>
           <div className="te-color-group">
-            <p className="te-color-group__label">Canvas</p>
-            <ColorRow id="color-background" label="Background"   value={colors.background}        onChange={setColor('background')} />
-            <ColorRow id="color-surface"    label="Surface"      value={colors.surface}           onChange={setColor('surface')} />
-            <ColorRow id="color-border"     label="Border"       value={colors.border}            onChange={setColor('border')} />
+            <p className="te-color-group__label" data-tooltip="Background and surface colors that form the 'stage' behind all your content.">Canvas</p>
+            <ColorRow id="color-background" label="Background"   value={colors.background}        onChange={setColor('background')}
+              tooltip="The page canvas — the base color sitting behind all other content." />
+            <ColorRow id="color-surface"    label="Surface"      value={colors.surface}           onChange={setColor('surface')}
+              tooltip="Cards, panels, and dialogs sit on this color — slightly distinct from the page background." />
+            <ColorRow id="color-border"     label="Border"       value={colors.border}            onChange={setColor('border')}
+              tooltip="Lines that define the edges of cards, inputs, and section dividers." />
           </div>
           <div className="te-color-group">
-            <p className="te-color-group__label">Text</p>
-            <ColorRow id="color-text"       label="Body text"    value={colors.text}              onChange={setColor('text')} />
-            <ColorRow id="color-text-muted" label="Muted text"   value={colors.textMuted}         onChange={setColor('textMuted')} />
+            <p className="te-color-group__label" data-tooltip="Colors used for readable text throughout the interface.">Text</p>
+            <ColorRow id="color-text"       label="Body text"    value={colors.text}              onChange={setColor('text')}
+              tooltip="The main readable text color — used for paragraphs, headings, and body content." />
+            <ColorRow id="color-text-muted" label="Muted text"   value={colors.textMuted}         onChange={setColor('textMuted')}
+              tooltip="Dimmer text for captions, timestamps, labels, and secondary information." />
           </div>
           <div className="te-color-group">
-            <p className="te-color-group__label">Accents</p>
-            <ColorRow id="color-accent"     label="Accent"       value={colors.accent}            onChange={setColor('accent')} />
-            <ColorRow id="color-error"      label="Error"        value={colors.error}             onChange={setColor('error')} />
-            <ColorRow id="color-success"    label="Success"      value={colors.success}           onChange={setColor('success')} />
-            <ColorRow id="color-warning"    label="Warning"      value={colors.warning}           onChange={setColor('warning')} />
+            <p className="te-color-group__label" data-tooltip="Status and highlight colors that communicate meaning at a glance.">Accents</p>
+            <ColorRow id="color-accent"     label="Accent"       value={colors.accent}            onChange={setColor('accent')}
+              tooltip="A highlight color for hover states, active links, and decorative emphasis." />
+            <ColorRow id="color-error"      label="Error"        value={colors.error}             onChange={setColor('error')}
+              tooltip="Signals something went wrong — form errors, failed actions, and destructive buttons." />
+            <ColorRow id="color-success"    label="Success"      value={colors.success}           onChange={setColor('success')}
+              tooltip="Confirms a completed action — saved, sent, or uploaded successfully." />
+            <ColorRow id="color-warning"    label="Warning"      value={colors.warning}           onChange={setColor('warning')}
+              tooltip="Draws attention to something that needs review but isn't a critical error." />
           </div>
 
           <div className="te-contrast-summary">
@@ -384,6 +449,12 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
               fg={colors.primaryForeground}
               bg={colors.primary}
               onFix={hex => updateSection('colors', { primaryForeground: hex })}
+            />
+            <ContrastBadge
+              label="Secondary text on secondary"
+              fg={colors.secondaryForeground}
+              bg={colors.secondary}
+              onFix={hex => updateSection('colors', { secondaryForeground: hex })}
             />
             <ContrastBadge
               label="Body text"
@@ -406,7 +477,7 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
         <summary className="te-section__summary">Typography</summary>
         <div className="te-section__body">
           <div className="te-dropdown-row">
-            <label className="te-dropdown-label" htmlFor="te-font-family">Font</label>
+            <label className="te-dropdown-label" htmlFor="te-font-family" data-tooltip="The typeface used across your whole design system — sets the overall personality of your text.">Font</label>
             <select
               id="te-font-family"
               className="te-dropdown"
@@ -425,10 +496,11 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
             stops={TEXT_SCALE_STOPS}
             value={textScaleIdx}
             onChange={handleTextScale}
+            tooltip="Overall text sizing — Compact for dense UIs, Large for readability and accessibility."
           />
 
           <div className="te-toggle-row">
-            <span className="te-toggle-label">Weight</span>
+            <span className="te-toggle-label" data-tooltip="Stroke thickness of text — Light feels airy and delicate, Heavy feels bold and strong.">Weight</span>
             <div className="te-toggle-group" role="group" aria-label="Font weight">
               {WEIGHT_PRESETS.map((preset, idx) => (
                 <button
@@ -450,6 +522,7 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
             stops={LINE_HEIGHT_STOPS}
             value={lineHeightIdx}
             onChange={handleLineHeight}
+            tooltip="Vertical space between text lines — Tight feels compact, Loose feels airy and relaxed."
           />
 
           <SliderControl
@@ -458,6 +531,7 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
             stops={LETTER_SPACING_STOPS}
             value={letterSpacingIdx}
             onChange={handleLetterSpacing}
+            tooltip="Horizontal space between characters — Tight looks sleek and modern, Wide looks editorial."
           />
         </div>
       </details>
@@ -472,6 +546,7 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
             stops={DENSITY_STOPS}
             value={densityIdx}
             onChange={handleDensity}
+            tooltip="Space between elements — Compact for data-dense dashboards, Airy for marketing pages."
           />
         </div>
       </details>
@@ -481,7 +556,7 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
         <summary className="te-section__summary">Corners</summary>
         <div className="te-section__body">
           <div className="te-toggle-row">
-            <span className="te-toggle-label">Style</span>
+            <span className="te-toggle-label" data-tooltip="Corner style — Sharp feels precise and professional, Rounded feels friendly and approachable.">Style</span>
             <div className="te-toggle-group te-toggle-group--radius" role="group" aria-label="Corner style">
               {RADIUS_PRESETS.map(preset => (
                 <button
@@ -498,6 +573,35 @@ export function TokenEditor({ theme, updateSection, onReset }: TokenEditorProps)
                     aria-hidden="true"
                   />
                   <span className="te-radius-label">{preset.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </details>
+
+      {/* Shadows */}
+      <details className="te-section">
+        <summary className="te-section__summary">Shadows</summary>
+        <div className="te-section__body">
+          <div className="te-toggle-row">
+            <span className="te-toggle-label" data-tooltip="How 'raised' elements appear — Flat is minimal and modern, Dramatic creates strong depth and hierarchy.">Elevation</span>
+            <div className="te-toggle-group te-toggle-group--shadow" role="group" aria-label="Shadow elevation">
+              {SHADOW_PRESETS.map(preset => (
+                <button
+                  key={preset.id}
+                  className={`te-toggle-btn te-toggle-btn--shadow${shadowPresetId === preset.id ? ' te-toggle-btn--active' : ''}`}
+                  onClick={() => handleShadowPreset(preset.id)}
+                  type="button"
+                  aria-pressed={shadowPresetId === preset.id}
+                  title={preset.label}
+                >
+                  <span
+                    className={`te-shadow-preview${preset.id === 'flat' ? ' te-shadow-preview--flat' : ''}`}
+                    aria-hidden="true"
+                    style={{ boxShadow: preset.shadows.md }}
+                  />
+                  <span className="te-shadow-label">{preset.label}</span>
                 </button>
               ))}
             </div>
