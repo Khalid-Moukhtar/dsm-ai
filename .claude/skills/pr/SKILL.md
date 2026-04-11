@@ -146,26 +146,15 @@ EOF
 git push -u origin [branch-name]
 ```
 
-4. Create PR using `gh pr create` with this body format:
+4. Create PR using `gh pr create` with the body copied exactly from `.github/PULL_REQUEST_TEMPLATE.md` — do NOT write a body from scratch or from memory. Fill in every section. All Quality Checklist checkboxes must be explicitly checked (`[x]`) or left unchecked (`[ ]`) with a reason.
 
-```markdown
-## Summary
-- [What changed and why — 1-3 bullet points]
+> **Why this is explicit:** in PR #6 the template was bypassed by writing a body from memory. The CI check (`pr-template-check.yml`) will now block merges with missing sections, but the correct behaviour is to never reach that failure — read the template first.
 
-## Changes
-- `src/[file]`: [what changed]
+5. If you need to amend a PR description after creation, **first check the PR is still open**:
 
-## Data Map Updates
-- Doc sync: verified `CLAUDE.md` project structure and `THEME_DATA_MAP.md` — no updates needed.
-  <!-- OR: Doc sync: updated CLAUDE.md [section] because [reason]. -->
-
-## Test Plan
-- [x] TSC — 0 errors
-- [x] Lint — 0 warnings
-- [x] Build — Vite build passes
-- [x] pnpm audit — no HIGH/CRITICAL CVEs
-- [x] [Specific test file] — X/X tests pass
-- [x] Quality audit: [passes run] — all PASS
+```bash
+gh pr view <number> --json state -q .state
+# Must output "OPEN" — if MERGED or CLOSED, stop. Never edit a merged/closed PR.
 ```
 
 ---
@@ -176,3 +165,5 @@ git push -u origin [branch-name]
 - **NEVER use `git add -A`** — stage only the files you intentionally changed
 - **NEVER skip the build check** — Vite build catches things TSC misses
 - **NEVER amend a previous commit** — if a pre-commit hook fails, fix and create a NEW commit
+- **NEVER edit a merged or closed PR** — check state before `gh pr edit`
+- **NEVER write a PR body from scratch** — always copy from `.github/PULL_REQUEST_TEMPLATE.md`
