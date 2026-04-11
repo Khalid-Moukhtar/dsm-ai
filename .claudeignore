@@ -1,0 +1,15 @@
+# Build artifacts
+node_modules/
+dist/
+coverage/
+
+# Version control internals
+.git/
+
+# Logs
+*.log
+
+# Lock files (too large, rarely useful for AI context)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
