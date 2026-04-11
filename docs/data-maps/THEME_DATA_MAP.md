@@ -242,7 +242,7 @@ Browser: new Blob([content]) → URL.createObjectURL → <a download> click → 
 | `CommunityLayout` | `src/components/layouts/CommunityLayout.tsx` | CSS vars via container | Renders polished community/forum mockup |
 | `MobileLayout` | `src/components/layouts/MobileLayout.tsx` | CSS vars via container | Renders polished mobile app mockup |
 | `TokenEditor` | `src/components/TokenEditor.tsx` | All token fields (read + mutate) | Semantic controls only (color pickers, presets, sliders — no raw CSS inputs); calls `updateSection`; shows WCAG contrast badges |
-| `ExportPreview` | `src/components/ExportPreview.tsx` | All token fields (read) | Shows export file content inline; triggers download |
+| `ExportPreview` | `src/components/ExportPreview.tsx` | All token fields (read) | Shows export file content inline; triggers download. On markdown tab: shows "Now what?" post-export guidance panel with copy-paste AI agent prompt. |
 | `useTheme` | `src/hooks/useTheme.ts` | All Theme fields | Central state hook: `selectedTheme`, `setLayoutType`, `setVariant`, `setColorMode`, `updateSection`, `resetToVariant`, `exportTheme` |
 
 ---

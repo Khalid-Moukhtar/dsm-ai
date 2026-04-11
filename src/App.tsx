@@ -66,7 +66,10 @@ export default function App() {
         {/* Dark sidebar — layout type + style variant selectors */}
         <aside className="app-sidebar" aria-label="Design controls">
           <div className="sidebar-section">
-            <p className="sidebar-label">Layout</p>
+            <div className="sidebar-label-row">
+              <p className="sidebar-label">Layout</p>
+              <span className="sidebar-preview-hint">preview only</span>
+            </div>
             <LayoutGallery
               selectedLayoutType={layoutType}
               onSelect={setLayoutType}
@@ -181,15 +184,36 @@ export default function App() {
 
           {!selectedTheme && (
             <div className="app-empty-state" role="status">
-              <div className="app-empty-state__hint">
-                <p className="app-empty-state__hint-text">
-                  Select a layout and a style from the left panel to start building your design system.
-                </p>
-                <div className="app-empty-step">
-                  <span className="app-empty-step__num">3</span>
-                  <div className="app-empty-step__text">
-                    <strong>Export to AI</strong>
-                    <p>Paste the file into Claude, Cursor, or your coding agent.</p>
+              <div className="app-empty-state__card">
+                <h2 className="app-empty-state__title">How it works</h2>
+                <div className="app-empty-state__steps">
+                  <div className="app-empty-step">
+                    <span className="app-empty-step__num">1</span>
+                    <div className="app-empty-step__text">
+                      <strong>Pick a layout</strong>
+                      <p>Choose what you&apos;re building — SaaS app, landing page, blog, and more.</p>
+                    </div>
+                  </div>
+                  <div className="app-empty-step">
+                    <span className="app-empty-step__num">2</span>
+                    <div className="app-empty-step__text">
+                      <strong>Pick a style</strong>
+                      <p>Find a vibe: Stripe, Linear, Notion, GitHub, and 6 more brand-inspired stacks.</p>
+                    </div>
+                  </div>
+                  <div className="app-empty-step">
+                    <span className="app-empty-step__num">3</span>
+                    <div className="app-empty-step__text">
+                      <strong>Customize</strong>
+                      <p>Adjust colors, fonts, and spacing using the editor on the right.</p>
+                    </div>
+                  </div>
+                  <div className="app-empty-step">
+                    <span className="app-empty-step__num">4</span>
+                    <div className="app-empty-step__text">
+                      <strong>Export + paste</strong>
+                      <p>Download the file and drop it into Claude, Cursor, or your AI coding agent.</p>
+                    </div>
                   </div>
                 </div>
               </div>
