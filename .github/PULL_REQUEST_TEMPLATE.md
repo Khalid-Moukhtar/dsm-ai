@@ -13,7 +13,10 @@
 
 ## Data Map Updates
 
-<!-- Which section of docs/data-maps/THEME_DATA_MAP.md was updated? Or "N/A — no data changes" -->
+<!-- Explicit statement required — one of:
+  "Doc sync: verified CLAUDE.md project structure and THEME_DATA_MAP.md — no updates needed."
+  "Doc sync: updated CLAUDE.md [section] and/or THEME_DATA_MAP.md [section] because [reason]."
+Silence is not allowed. -->
 
 -
 
@@ -25,6 +28,7 @@
 - [ ] `pnpm exec tsc --noEmit` — 0 errors
 - [ ] `pnpm run lint` — 0 warnings
 - [ ] `pnpm run build` — Vite build passes
+- [ ] `pnpm audit --audit-level=high` — no HIGH/CRITICAL CVEs
 - [ ] Targeted tests pass (list file paths below)
 
 **Tests run**:
@@ -34,22 +38,24 @@ pnpm exec vitest run src/[specific-test-file].test.ts
 
 ### Quality Audit Passes
 - [ ] Pass 1 — Security: no XSS, no secrets, input validation verified
-- [ ] Pass 2 — Data Integrity: export field names match THEME_DATA_MAP.md exactly (all 3 formats in sync)
+- [ ] Pass 2 — Data Integrity: export field names match THEME_DATA_MAP.md exactly (all formats in sync)
 - [ ] Pass 4 — Accessibility: contrast ≥4.5:1, keyboard nav works, ARIA labels present (if UI changed)
 - [ ] Pass 5 — Framework Patterns: hooks correct, memoization used, no N+1, cleanup in effects (if components changed)
 
 ### Code Quality
 - [ ] No dead code or unused imports
 - [ ] No `console.log` debug statements
-- [ ] No hardcoded design values outside `src/data/templates.ts`
+- [ ] No hardcoded design values outside `src/data/variants.ts`
 - [ ] No `any` types
 - [ ] Vanilla CSS only — no Tailwind, no CSS-in-JS
 - [ ] No backend logic introduced
 
-### Documentation Sync
-- [ ] `THEME_DATA_MAP.md` updated if new tokens or export fields were added
-- [ ] `CLAUDE.md` updated if a new critical pattern was discovered
-- [ ] `memory/project_context.md` updated if a systemic bug was fixed
+### Documentation Sync (Hard Gate)
+<!-- Step 6 of the PR skill. Must pass before merge. -->
+- [ ] File paths in CLAUDE.md project-structure verified against `Glob src/components/**/*.tsx` and `Glob src/utils/*.ts`
+- [ ] Numeric claims verified: token count matches `toHaveLength()` in export.test.ts; variant count matches `STYLE_VARIANTS.length`; layout count matches `IMPLEMENTED` map; format count matches `FORMATS` array
+- [ ] Field names in `ColorPalette` (theme.ts) match token table in THEME_DATA_MAP.md
+- [ ] Explicit doc-sync statement written in "Data Map Updates" section above
 
 ---
 
