@@ -32,17 +32,21 @@ export function SystemTokensView({ theme }: Props) {
         <h2 className="stv-heading">Color palette</h2>
         <div className="stv-swatches">
           {([
-            ['primary',    'Primary'],
-            ['secondary',  'Secondary'],
-            ['accent',     'Accent'],
-            ['background', 'Background'],
-            ['surface',    'Surface'],
-            ['error',      'Error'],
-            ['success',    'Success'],
-            ['warning',    'Warning'],
-            ['text',       'Text'],
-            ['text-muted', 'Text muted'],
-            ['border',     'Border'],
+            ['primary',              'Primary'],
+            ['primary-foreground',   'Primary text'],
+            ['secondary',            'Secondary'],
+            ['secondary-foreground', 'Secondary text'],
+            ['accent',               'Accent'],
+            ['background',           'Background'],
+            ['surface',              'Surface'],
+            ['border',               'Border'],
+            ['text',                 'Text'],
+            ['text-muted',           'Text muted'],
+            ['error',                'Error'],
+            ['success',              'Success'],
+            ['warning',              'Warning'],
+            ['info',                 'Info'],
+            ['focus-ring',           'Focus ring'],
           ] as [string, string][]).map(([token, label]) => (
             <div key={token} className="stv-swatch-group">
               <div className="stv-swatch" style={{ background: `var(--color-${token})` }} />
@@ -51,6 +55,8 @@ export function SystemTokensView({ theme }: Props) {
           ))}
         </div>
       </section>
+
+      <div className="stv-grid">
 
       {/* ── Buttons ─────────────────────────────────────────── */}
       <section className="stv-section">
@@ -127,14 +133,14 @@ export function SystemTokensView({ theme }: Props) {
         </div>
       </section>
 
-      {/* ── Typography scale ────────────────────────────────── */}
+      {/* ── Typography scale (full width) ───────────────────── */}
       {/*
         Pattern: each row = spec strip (token name + size · weight) + sample text at
         actual size/weight. Body row renders two lines so line-height is VISIBLE.
         Weights subsection: same glyph at all three weights side-by-side.
         Tracking: uppercase sample — caps make tracking differences perceptible.
       */}
-      <section className="stv-section">
+      <section className="stv-section stv-section--full">
         <h2 className="stv-heading">Typography</h2>
 
         <div className="stv-type-scale">
@@ -275,8 +281,8 @@ export function SystemTokensView({ theme }: Props) {
         </div>
       </section>
 
-      {/* ── Border radius scale ─────────────────────────────── */}
-      <section className="stv-section">
+      {/* ── Border radius scale (full width) ───────────────── */}
+      <section className="stv-section stv-section--full">
         <h2 className="stv-heading">Border radius</h2>
         <div className="stv-radius-row">
           {([
@@ -297,6 +303,8 @@ export function SystemTokensView({ theme }: Props) {
           ))}
         </div>
       </section>
+
+      </div>{/* end stv-grid */}
 
     </div>
   )
