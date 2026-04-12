@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { trackShareCopy } from '../utils/analytics'
 
 interface ShareButtonProps {
   hasTheme: boolean
@@ -14,6 +15,7 @@ export function ShareButton({ hasTheme }: ShareButtonProps) {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
+      trackShareCopy()
     }).catch(() => {
       // Clipboard write failed (insecure context, denied permission) — fail silently
     })

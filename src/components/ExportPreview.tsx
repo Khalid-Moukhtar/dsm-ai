@@ -6,6 +6,7 @@ import { useState, useMemo } from 'react'
 const HANDOFF_PROMPT = `I have a design system in the attached file. Use these tokens for all UI — never hardcode colors, spacing, or typography values. When I ask to change something visual, update the token, not individual instances.`
 import type { Theme, ExportFormat } from '../types/theme'
 import { exportTheme, getFileName, downloadTheme } from '../utils/export'
+import { trackExportCopy, trackExportDownload } from '../utils/analytics'
 
 interface Props {
   theme: Theme
@@ -40,12 +41,14 @@ export function ExportPreview({ theme }: Props) {
 
   function handleDownload() {
     downloadTheme(theme, activeFormat)
+    trackExportDownload(activeFormat)
   }
 
   async function handleCopy() {
     await navigator.clipboard.writeText(exportString)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
+    trackExportCopy(activeFormat)
   }
 
   async function handleCopyPrompt() {
