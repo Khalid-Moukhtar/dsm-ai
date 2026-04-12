@@ -8,7 +8,13 @@
     "type": "git",
     "url": "https://github.com/Khalid-Moukhtar/motif.git"
   },
-  "keywords": ["design-system", "design-tokens", "vibe-coding", "ai-development", "css"],
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "vibe-coding",
+    "ai-development",
+    "css"
+  ],
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -20,6 +26,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "posthog-js": "^1.367.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

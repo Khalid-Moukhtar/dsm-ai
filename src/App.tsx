@@ -7,6 +7,14 @@ import { ExportPreview } from './components/ExportPreview'
 import { ShareButton } from './components/ShareButton'
 import { STYLE_VARIANTS, VARIANTS, LAYOUT_TYPES } from './data/variants'
 import type { StyleVariant, ColorMode, LayoutType } from './types/theme'
+import {
+  trackLayoutSelect,
+  trackVariantSelect,
+  trackColorModeToggle,
+  trackRandomize,
+  trackTutorialSkip,
+  trackTutorialComplete,
+} from './utils/analytics'
 
 const TUTORIAL_STEPS = [
   { title: "Pick a layout", body: "Choose what you're building — SaaS, landing page, blog, and more." },
@@ -106,16 +114,19 @@ export default function App() {
   function handleSelectLayout(lt: LayoutType) {
     setLayoutType(lt)
     setTutorialStep(prev => prev === 1 ? 2 : prev)
+    trackLayoutSelect(lt)
   }
 
   function handleSelectVariant(v: StyleVariant) {
     setVariant(v)
     setTutorialStep(prev => (prev === 2 && layoutType !== null) ? 3 : prev)
+    trackVariantSelect(v)
   }
 
   function handleToggleColorMode(mode: ColorMode) {
     setColorMode(mode)
     setTutorialStep(prev => prev === 4 ? 5 : prev)
+    trackColorModeToggle(mode)
   }
 
   function handleRandomize() {
@@ -126,6 +137,7 @@ export default function App() {
     setVariant(randVariant)
     setColorMode(randMode)
     setTutorialStep(prev => (prev !== null && prev < 3) ? 3 : prev)
+    trackRandomize()
   }
 
   const step = tutorialStep
@@ -339,7 +351,7 @@ export default function App() {
           >
             motif on GitHub
           </a>
-          {' '}· MIT License
+          {' '}· MIT License · Anonymous analytics (no cookies, no personal data)
         </p>
       </footer>
 
@@ -360,7 +372,7 @@ export default function App() {
             <button
               type="button"
               className="tour-tooltip__close"
-              onClick={() => setTutorialStep(null)}
+              onClick={() => { setTutorialStep(null); trackTutorialSkip(step) }}
               aria-label="Skip tutorial"
             >
               ✕
@@ -381,7 +393,7 @@ export default function App() {
             <button
               type="button"
               className="tour-tooltip__next"
-              onClick={() => setTutorialStep(null)}
+              onClick={() => { setTutorialStep(null); trackTutorialComplete() }}
             >
               Done ✓
             </button>
