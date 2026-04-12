@@ -6,7 +6,7 @@
 motif is a zero-configuration design token tool. Pick a layout context and brand-inspired style,
 adjust tokens, export a complete design token file for use with AI coding agents.
 
-**Stack**: Vite 6 + React 18 + TypeScript + Vanilla CSS. No backend. No external APIs (Google Fonts CDN is the one exception).
+**Stack**: Vite 6 + React 18 + TypeScript + Vanilla CSS. No backend. Two allowed external services: Google Fonts CDN (typography) and PostHog EU analytics (eu.i.posthog.com). No others.
 
 ---
 

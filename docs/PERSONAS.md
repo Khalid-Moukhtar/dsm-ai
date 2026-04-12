@@ -1,6 +1,6 @@
-# DSM (Design System Maker) — Personas & Permissions
+# motif — Personas & Permissions
 
-> Last updated: 2026-04-09
+> Last updated: 2026-04-12
 
 ## Roles
 
@@ -8,13 +8,13 @@
 |------|-------------|---------------------|
 | Builder | Vibe coder, builder, or non-designer starting a new app who needs a visual design system to hand to their AI coding agent. No design background. Needs to see realistic layouts to know what they want. | Full access to all tool functionality |
 
-There is no authentication. DSM is a public, unauthenticated, single-role tool.
+There is no authentication. motif is a public, unauthenticated, single-role tool.
 All visitors are treated as "Developer" with identical access.
 
 ## Capability Matrix
 
-| Capability | Developer |
-|-----------|-----------|
+| Capability | Builder |
+|-----------|---------|
 | Browse template gallery | ✅ |
 | Load a template into preview | ✅ |
 | Tweak design token values | ✅ |
@@ -22,6 +22,9 @@ All visitors are treated as "Developer" with identical access.
 | Export as Markdown | ✅ |
 | Export as JSON | ✅ |
 | Export as CSS | ✅ |
+| Export as Tailwind v3 | ✅ |
+| Export as Tailwind v4 | ✅ |
+| Copy shareable URL | ✅ |
 | Reset to template defaults | ✅ |
 
 ## Role Relationships
@@ -38,4 +41,4 @@ No server-side access control required (no backend).
 
 Client-side rules:
 1. **Export is always allowed**: Even if contrast warnings are present, export is never blocked. The user is informed but in control.
-2. **No data leaves the browser**: The tool makes no network requests after initial page load.
+2. **Anonymous analytics only**: Usage events (layout picked, export format used, etc.) are sent to PostHog EU after page load. No personal data is included. See [PRIVACY.md](../PRIVACY.md).

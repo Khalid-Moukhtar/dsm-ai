@@ -34,7 +34,8 @@ Open the URL printed in your terminal.
 - **Styling**: Vanilla CSS with CSS custom properties
 - **Testing**: Vitest v3 (47 tests)
 - **Package manager**: pnpm
-- **No backend** -- 100% client-side, no API keys, no accounts
+- **No backend** -- 100% client-side, no accounts
+- **Analytics** -- anonymous usage events via PostHog EU (no cookies, no personal data) — [Privacy policy](PRIVACY.md)
 
 ---
 

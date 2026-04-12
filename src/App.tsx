@@ -351,7 +351,15 @@ export default function App() {
           >
             motif on GitHub
           </a>
-          {' '}· MIT License · Anonymous analytics (no cookies, no personal data)
+          {' '}· MIT License ·{' '}
+          <a
+            href="https://github.com/Khalid-Moukhtar/motif/blob/main/PRIVACY.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy
+          </a>
+          {' '}(anonymous analytics, no cookies)
         </p>
       </footer>
 
