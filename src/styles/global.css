@@ -51,8 +51,6 @@ a:focus-visible {
 }
 
 .app-header__inner {
-  max-width: 1440px;
-  margin: 0 auto;
   height: 56px;
   display: flex;
   align-items: center;
@@ -419,6 +417,149 @@ a:focus-visible {
 /* ================================================
    (section-heading, randomize-btn removed — moved to sidebar)
    ================================================ */
+
+/* ================================================
+   TUTORIAL ONBOARDING
+   ================================================ */
+
+@keyframes tutorial-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  50%       { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.18); }
+}
+
+/* Sidebar sections (dark): left border accent + tinted bg */
+.app-sidebar .tutorial-highlight {
+  background: rgba(99, 102, 241, 0.08);
+  border-left: 2px solid #6366F1;
+  transition: background 0.2s;
+}
+
+/* Canvas panels (light): pulsing outline */
+.workspace__editor.tutorial-highlight,
+.workspace__export.tutorial-highlight {
+  outline: 2px solid rgba(99, 102, 241, 0.45);
+  outline-offset: 3px;
+  border-radius: 8px;
+  animation: tutorial-pulse 2.5s ease-in-out infinite;
+}
+
+/* Mode toggle inline highlight */
+.workspace-controls__group.tutorial-highlight {
+  outline: 2px solid rgba(99, 102, 241, 0.45);
+  outline-offset: 4px;
+  border-radius: 6px;
+  animation: tutorial-pulse 2.5s ease-in-out infinite;
+}
+
+/* ── Tour tooltip (position: fixed, tracks target element) ── */
+.tour-tooltip {
+  position: fixed;
+  z-index: 9000;
+  width: 220px;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+}
+
+/* Arrow: left — tooltip is to the right of sidebar, caret points left */
+.tour-tooltip--left::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 8px solid transparent;
+  border-right-color: #18181b;
+}
+
+/* Arrow: down — tooltip is above element, caret points down */
+.tour-tooltip--down::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #18181b;
+}
+
+/* Arrow: up — tooltip is below element (mode toggle), caret points up */
+.tour-tooltip--up::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-bottom-color: #18181b;
+}
+
+.tour-tooltip__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.tour-tooltip__badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #6366F1;
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+}
+
+.tour-tooltip__close {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.625rem;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s, background 0.12s;
+}
+.tour-tooltip__close:hover { color: #e4e4e7; background: rgba(255, 255, 255, 0.08); }
+.tour-tooltip__close:focus-visible { outline: 2px solid #6366F1; outline-offset: 2px; }
+
+.tour-tooltip__title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f4f4f5;
+  margin-bottom: 5px;
+}
+
+.tour-tooltip__body {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.tour-tooltip__next {
+  width: 100%;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background: #6366F1;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 0;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.tour-tooltip__next:hover { background: #4f46e5; }
+.tour-tooltip__next:focus-visible { outline: 2px solid #818cf8; outline-offset: 2px; }
 
 /* ================================================
    LAYOUT GALLERY — 8 layout type cards

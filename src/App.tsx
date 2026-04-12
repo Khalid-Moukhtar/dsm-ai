@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useTheme } from './hooks/useTheme'
 import { LayoutGallery } from './components/LayoutGallery'
 import { LayoutPreview } from './components/LayoutPreview'
@@ -8,8 +8,34 @@ import { ShareButton } from './components/ShareButton'
 import { STYLE_VARIANTS, VARIANTS, LAYOUT_TYPES } from './data/variants'
 import type { StyleVariant, ColorMode, LayoutType } from './types/theme'
 
+const TUTORIAL_STEPS = [
+  { title: "Pick a layout", body: "Choose what you're building — SaaS, landing page, blog, and more." },
+  { title: "Pick a style", body: "Find your vibe — Stripe, Linear, Notion, GitHub, and 6 more." },
+  { title: "Customize (optional)", body: "Adjust colors, fonts, and spacing in the token editor." },
+  { title: "Toggle Light / Dark", body: "Preview your design system in both color modes." },
+  { title: "Export", body: "Copy or download your tokens to use with Claude, Cursor, or any AI agent." },
+]
+
+type ArrowDir = 'left' | 'down' | 'up'
+
+interface TooltipPos {
+  top: number
+  left: number
+  arrowDir: ArrowDir
+  transform: string
+}
+
 export default function App() {
   const [isDsmDark, setIsDsmDark] = useState(false)
+  const [tutorialStep, setTutorialStep] = useState<number | null>(1)
+  const [tooltipPos, setTooltipPos] = useState<TooltipPos | null>(null)
+
+  // Refs for the 5 tutorial target elements
+  const layoutSectionRef = useRef<HTMLDivElement>(null)
+  const styleSectionRef = useRef<HTMLDivElement>(null)
+  const editorRef = useRef<HTMLDivElement>(null)
+  const modeGroupRef = useRef<HTMLDivElement>(null)
+  const exportRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     document.body.classList.toggle('dsm-dark', isDsmDark)
@@ -29,6 +55,69 @@ export default function App() {
     resetToVariant,
   } = useTheme()
 
+  // Calculate tooltip position after DOM updates
+  useLayoutEffect(() => {
+    if (tutorialStep === null) {
+      setTooltipPos(null)
+      return
+    }
+
+    const refMap: Record<number, React.RefObject<HTMLDivElement | null>> = {
+      1: layoutSectionRef,
+      2: styleSectionRef,
+      3: editorRef,
+      4: modeGroupRef,
+      5: exportRef,
+    }
+
+    const ref = refMap[tutorialStep]
+    if (!ref?.current) return
+
+    const rect = ref.current.getBoundingClientRect()
+    if (rect.width === 0) return // element not yet in DOM
+
+    if (tutorialStep <= 2) {
+      // Sidebar sections → tooltip to the right, arrow points left
+      setTooltipPos({
+        top: rect.top + rect.height / 2,
+        left: rect.right + 14,
+        arrowDir: 'left',
+        transform: 'translateY(-50%)',
+      })
+    } else if (tutorialStep === 4) {
+      // Mode toggle → tooltip below, arrow points up
+      setTooltipPos({
+        top: rect.bottom + 12,
+        left: rect.left + rect.width / 2,
+        arrowDir: 'up',
+        transform: 'translateX(-50%)',
+      })
+    } else {
+      // Editor (3) and Export (5) panels → tooltip above, arrow points down
+      setTooltipPos({
+        top: rect.top - 12,
+        left: rect.left + rect.width / 2,
+        arrowDir: 'down',
+        transform: 'translateX(-50%) translateY(-100%)',
+      })
+    }
+  }, [tutorialStep, selectedTheme])
+
+  function handleSelectLayout(lt: LayoutType) {
+    setLayoutType(lt)
+    setTutorialStep(prev => prev === 1 ? 2 : prev)
+  }
+
+  function handleSelectVariant(v: StyleVariant) {
+    setVariant(v)
+    setTutorialStep(prev => (prev === 2 && layoutType !== null) ? 3 : prev)
+  }
+
+  function handleToggleColorMode(mode: ColorMode) {
+    setColorMode(mode)
+    setTutorialStep(prev => prev === 4 ? 5 : prev)
+  }
+
   function handleRandomize() {
     const randLayout = LAYOUT_TYPES[Math.floor(Math.random() * LAYOUT_TYPES.length)] as LayoutType
     const randVariant = STYLE_VARIANTS[Math.floor(Math.random() * STYLE_VARIANTS.length)] as StyleVariant
@@ -36,7 +125,11 @@ export default function App() {
     setLayoutType(randLayout)
     setVariant(randVariant)
     setColorMode(randMode)
+    setTutorialStep(prev => (prev !== null && prev < 3) ? 3 : prev)
   }
+
+  const step = tutorialStep
+  const stepData = step !== null ? TUTORIAL_STEPS[step - 1] : null
 
   return (
     <div className="app">
@@ -65,18 +158,24 @@ export default function App() {
       <div className="app-body">
         {/* Dark sidebar — layout type + style variant selectors */}
         <aside className="app-sidebar" aria-label="Design controls">
-          <div className="sidebar-section">
+          <div
+            ref={layoutSectionRef}
+            className={`sidebar-section${tutorialStep === 1 ? ' tutorial-highlight' : ''}`}
+          >
             <div className="sidebar-label-row">
               <p className="sidebar-label">Layout</p>
               <span className="sidebar-preview-hint">preview only</span>
             </div>
             <LayoutGallery
               selectedLayoutType={layoutType}
-              onSelect={setLayoutType}
+              onSelect={handleSelectLayout}
             />
           </div>
 
-          <div className="sidebar-section">
+          <div
+            ref={styleSectionRef}
+            className={`sidebar-section${tutorialStep === 2 ? ' tutorial-highlight' : ''}`}
+          >
             <div className="sidebar-section__header">
               <p className="sidebar-label">Style</p>
               <button
@@ -101,7 +200,7 @@ export default function App() {
                   <button
                     key={v}
                     className={`variant-card${v === 'custom' ? ' variant-card--custom' : ''}${variant === v ? ' variant-card--selected' : ''}`}
-                    onClick={() => setVariant(v as StyleVariant)}
+                    onClick={() => handleSelectVariant(v as StyleVariant)}
                     type="button"
                     aria-pressed={variant === v}
                   >
@@ -140,12 +239,15 @@ export default function App() {
                   />
                 </div>
 
-                <div className="workspace-controls__group">
+                <div
+                  ref={modeGroupRef}
+                  className={`workspace-controls__group${tutorialStep === 4 ? ' tutorial-highlight' : ''}`}
+                >
                   <span className="workspace-controls__label" aria-hidden="true">Mode</span>
                   <div className="mode-toggle" role="group" aria-label="Color mode">
                     <button
                       className={`mode-toggle__btn${colorMode === 'light' ? ' mode-toggle__btn--active' : ''}`}
-                      onClick={() => setColorMode('light' as ColorMode)}
+                      onClick={() => handleToggleColorMode('light' as ColorMode)}
                       type="button"
                       aria-pressed={colorMode === 'light'}
                     >
@@ -153,7 +255,7 @@ export default function App() {
                     </button>
                     <button
                       className={`mode-toggle__btn${colorMode === 'dark' ? ' mode-toggle__btn--active' : ''}`}
-                      onClick={() => setColorMode('dark' as ColorMode)}
+                      onClick={() => handleToggleColorMode('dark' as ColorMode)}
                       type="button"
                       aria-pressed={colorMode === 'dark'}
                     >
@@ -168,14 +270,20 @@ export default function App() {
                 <div className="workspace__preview">
                   <LayoutPreview theme={selectedTheme} />
                 </div>
-                <div className="workspace__editor">
+                <div
+                  ref={editorRef}
+                  className={`workspace__editor${tutorialStep === 3 ? ' tutorial-highlight' : ''}`}
+                >
                   <TokenEditor
                     theme={selectedTheme}
                     updateSection={updateSection}
                     onReset={resetToVariant}
                   />
                 </div>
-                <div className="workspace__export">
+                <div
+                  ref={exportRef}
+                  className={`workspace__export${tutorialStep === 5 ? ' tutorial-highlight' : ''}`}
+                >
                   <ExportPreview theme={selectedTheme} />
                 </div>
               </div>
@@ -234,6 +342,52 @@ export default function App() {
           {' '}· MIT License
         </p>
       </footer>
+
+      {/* Floating tour tooltip — position: fixed, tracks target element */}
+      {step !== null && tooltipPos && stepData && (
+        <div
+          className={`tour-tooltip tour-tooltip--${tooltipPos.arrowDir}`}
+          style={{
+            top: tooltipPos.top,
+            left: tooltipPos.left,
+            transform: tooltipPos.transform,
+          }}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="tour-tooltip__header">
+            <span className="tour-tooltip__badge">{step} / 5</span>
+            <button
+              type="button"
+              className="tour-tooltip__close"
+              onClick={() => setTutorialStep(null)}
+              aria-label="Skip tutorial"
+            >
+              ✕
+            </button>
+          </div>
+          <strong className="tour-tooltip__title">{stepData.title}</strong>
+          <p className="tour-tooltip__body">{stepData.body}</p>
+          {(step === 3 || step === 4) && (
+            <button
+              type="button"
+              className="tour-tooltip__next"
+              onClick={() => setTutorialStep(s => s !== null ? s + 1 : null)}
+            >
+              Next →
+            </button>
+          )}
+          {step === 5 && (
+            <button
+              type="button"
+              className="tour-tooltip__next"
+              onClick={() => setTutorialStep(null)}
+            >
+              Done ✓
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
