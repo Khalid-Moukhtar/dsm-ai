@@ -13,10 +13,11 @@ Vibe Coders and AI Developers who are starting a new project and need a fast way
 to establish a consistent visual direction before asking their AI agent to build the UI.
 
 ## Tech Stack
-- Frontend: Vite + React 18 + TypeScript
+- Frontend: Vite 6 + React 18 + TypeScript
 - Styling: Vanilla CSS with CSS custom properties
 - Package manager: pnpm
-- No backend — 100% client-side, works offline
+- No backend — 100% client-side
+- Analytics: PostHog EU (anonymous usage events, no cookies, no PII)
 
 ## Core Entities
 - Theme: a named design system configuration (colors, typography, spacing, border radius)

@@ -1,4 +1,4 @@
-# DSM — Documentation Index
+# motif — Documentation Index
 
 ## Domain & Architecture
 - [docs/DOMAIN.md](DOMAIN.md) — Business domain, core workflow, business rules
@@ -11,7 +11,10 @@
 ## Project Governance
 - [CLAUDE.md](../CLAUDE.md) — AI agent instructions and critical patterns
 - [llms.txt](../llms.txt) — Machine-readable project summary
+- [SECURITY.md](../SECURITY.md) — Security policy and known attack surfaces
+- [PRIVACY.md](../PRIVACY.md) — Privacy policy and analytics disclosure
 
 ## Community
 - [README.md](../README.md) — Project overview
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — Contributor workflow
 - [LICENSE](../LICENSE) — MIT License

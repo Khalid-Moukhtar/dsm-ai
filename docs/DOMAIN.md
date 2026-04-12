@@ -1,22 +1,22 @@
-# DSM (Design System Maker) — Domain Summary
+# motif — Domain Summary
 
-> Last updated: 2026-04-09
+> Last updated: 2026-04-12
 
 ## North Star
 
-> **"DSM is the fastest path for non-designers to go from 'I want something that looks like [X]' to a complete, AI-ready design system — in under 60 seconds, no design knowledge required."**
+> **"motif is the fastest path for non-designers to go from 'I want something that looks like [X]' to a complete, AI-ready design system — in under 60 seconds, no design knowledge required."**
 
-The exported file is the handoff to an AI coding agent. Everything in DSM must serve this: fast visualization, safe defaults, one-click export.
+The exported file is the handoff to an AI coding agent. Everything in motif must serve this: fast visualization, safe defaults, one-click export.
 
 ---
 
 ## What This Product Does
 
-DSM is a **published web tool** (hosted online, always-on) that lets **non-designers, vibe coders, and builders** browse realistic app and website layout previews — each fully styled with a live design system — then tweak the design tokens until the vibe feels right, and export the result as a design system file.
+motif is a **published web tool** (hosted online, always-on) that lets **non-designers, vibe coders, and builders** browse realistic app and website layout previews — each fully styled with a live design system — then tweak the design tokens until the vibe feels right, and export the result as a design system file.
 
 The exported file is the **handoff to an AI coding agent**. It contains all design tokens in a structured, AI-readable format, with a framing instruction that tells the agent to apply the tokens consistently across all UI components. The user pastes this file into Claude, Cursor, or any other coding agent to give it a visual contract before it builds the actual application UI.
 
-**The product solves one specific problem**: a developer starting a new project has no design background, no idea what they want it to look like, and no time to learn design tools. DSM lets them pick something that looks good and export it in 60 seconds.
+**The product solves one specific problem**: a developer starting a new project has no design background, no idea what they want it to look like, and no time to learn design tools. motif lets them pick something that looks good and export it in 60 seconds.
 
 ---
 
@@ -108,7 +108,7 @@ Dark mode is **not** a third hierarchy level. It is a binary toggle that applies
 6. User switches between pages within the layout (e.g., Dashboard → Users → Settings) to see the full context
 7. User tweaks tokens using semantic controls (sliders, dropdowns, presets)
 8. Live preview updates instantly
-9. User clicks Export → selects format (MD / JSON / CSS) → downloads file
+9. User clicks Export → selects format (MD / JSON / CSS / Tailwind v3 / Tailwind v4) → downloads file
 10. File is pasted into an AI coding agent as a design contract
 
 ---
@@ -129,7 +129,7 @@ No monetization in v1. Potential future: hosted service with community-submitted
 5. **Safe defaults**: All built-in templates must use color combinations that pass WCAG AA contrast. Contrast warnings shown in token editor but do not block export.
 6. **No backend, no data persistence**: The app operates entirely in the browser. Nothing stored server-side. State resets on tab close.
 7. **Client-side only**: Export is a file download triggered by the browser. No uploading, no server API calls.
-8. **Multiple export formats**: All three formats (MD, JSON, CSS) must stay in sync.
+8. **Multiple export formats**: All five formats (MD, JSON, CSS, Tailwind v3, Tailwind v4) must stay in sync.
 9. **Built-in templates only (v1)**: Templates are hardcoded. No user-submitted templates in v1.
 10. **Text export only**: No screenshots, no images.
 11. **Google Fonts**: Google Fonts CDN is used for typography. The tool is online-first; offline functionality is not a requirement.
@@ -138,7 +138,15 @@ No monetization in v1. Potential future: hosted service with community-submitted
 
 ## Compliance & Legal
 
-None identified. No user data collected. No accounts. No cookies beyond session state.
+motif collects **anonymous, aggregated usage events** via PostHog EU (Frankfurt, Germany).
+No personal data is collected: no IP addresses (discarded server-side), no cookies
+(`persistence: 'memory'`), no persistent identifiers, no autocapture.
+
+Because no data is stored on or read from the user's device, no consent banner is
+required under GDPR or the German TTDSG. Disclosure is shown in the app footer.
+Full details: [PRIVACY.md](../PRIVACY.md).
+
+No user accounts. No authentication.
 
 ## Multi-Country / Multi-Language
 
@@ -146,5 +154,7 @@ Single language: English only. CSS/JSON/Markdown formats are syntax-universal.
 
 ## Integrations
 
-Google Fonts CDN — for web font loading in layout previews and exported font stacks.
+- **Google Fonts CDN** — web font loading in layout previews and exported font stacks
+- **PostHog EU** (`eu.i.posthog.com`) — anonymous usage analytics; data stored in Frankfurt, Germany
+
 No other external dependencies at runtime.

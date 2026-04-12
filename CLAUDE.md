@@ -19,8 +19,8 @@
 12. **Non-designer mandate** — EVERY UI control for non-color tokens must use semantic controls (sliders, presets, dropdowns), not raw CSS value inputs. Non-designers do not know what "16px", "1.5", or "0em" mean. See docs/DOMAIN.md "Non-Designer UX Mandate" for the full spec. Never revert to freeform text inputs for spacing, radius, or typography tokens.
 13. **Google Fonts allowed** — the tool is online-first. Google Fonts CDN may be used for typography in layout previews and as exported font stacks in templates. No other external runtime dependencies (except PostHog — see rule 9).
 14. **Analytics via PostHog only** — `src/utils/analytics.ts` contains all event tracking. Call the typed wrappers there; never call `posthog.capture()` directly elsewhere. PostHog config: EU cloud, `persistence: 'memory'` (no cookies), `autocapture: false`. The public project token in `main.tsx` is write-only and safe to commit. "Discard client IP data" is enabled in PostHog project settings.
-14. **NEVER edit a merged or closed PR** — `gh pr edit` on a merged PR is a no-op at best and misleading at worst. Before any `gh pr edit <number>`, verify state: `gh pr view <number> --json state -q .state`. If the output is `MERGED` or `CLOSED`, stop. Do not edit.
-15. **Read the Data Map first** — before touching any token-related source code, read `docs/data-maps/THEME_DATA_MAP.md`. The Data Map is the contract.
+15. **NEVER edit a merged or closed PR** — `gh pr edit` on a merged PR is a no-op at best and misleading at worst. Before any `gh pr edit <number>`, verify state: `gh pr view <number> --json state -q .state`. If the output is `MERGED` or `CLOSED`, stop. Do not edit.
+16. **Read the Data Map first** — before touching any token-related source code, read `docs/data-maps/THEME_DATA_MAP.md`. The Data Map is the contract.
 
 ## Common Implementation Checklist
 
