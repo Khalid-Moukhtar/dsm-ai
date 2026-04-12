@@ -40,7 +40,6 @@ jobs:
             done
             echo ""
             echo "See .github/PULL_REQUEST_TEMPLATE.md for the required format."
-            echo "Use the /pr skill — never write PR bodies from scratch."
             exit 1
           fi
 
