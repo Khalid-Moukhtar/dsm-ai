@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f0f"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Logo mark -->
+  <path d="M80 340V280l20 30 20-30v60" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="140" cy="310" r="18" stroke="#6366f1" stroke-width="5" fill="none"/>
+  <!-- Title -->
+  <text x="80" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#ffffff">motif</text>
+  <!-- Tagline -->
+  <text x="80" y="410" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="400" fill="#a1a1aa">Design tokens for AI agents</text>
+  <!-- Feature pills -->
+  <rect x="80" y="460" width="180" height="40" rx="20" fill="#1e1e3f"/>
+  <text x="170" y="486" font-family="system-ui, sans-serif" font-size="18" fill="#a78bfa" text-anchor="middle">10 Style Variants</text>
+  <rect x="280" y="460" width="160" height="40" rx="20" fill="#1e1e3f"/>
+  <text x="360" y="486" font-family="system-ui, sans-serif" font-size="18" fill="#a78bfa" text-anchor="middle">8 Layout Types</text>
+  <rect x="460" y="460" width="200" height="40" rx="20" fill="#1e1e3f"/>
+  <text x="560" y="486" font-family="system-ui, sans-serif" font-size="18" fill="#a78bfa" text-anchor="middle">Export to AI Agents</text>
+  <!-- Mock UI preview on right -->
+  <rect x="700" y="100" width="420" height="430" rx="12" fill="#1a1a2e" stroke="#2a2a4a" stroke-width="1"/>
+  <!-- Title bar -->
+  <rect x="700" y="100" width="420" height="36" rx="12" fill="#2a2a4a"/>
+  <circle cx="720" cy="118" r="5" fill="#ef4444"/>
+  <circle cx="738" cy="118" r="5" fill="#f59e0b"/>
+  <circle cx="756" cy="118" r="5" fill="#22c55e"/>
+  <!-- Sidebar -->
+  <rect x="700" y="136" width="100" height="394" fill="#161630"/>
+  <rect x="712" y="156" width="76" height="8" rx="4" fill="#3a3a5a"/>
+  <rect x="712" y="178" width="60" height="8" rx="4" fill="#3a3a5a"/>
+  <rect x="712" y="200" width="68" height="8" rx="4" fill="#6366f1"/>
+  <rect x="712" y="222" width="52" height="8" rx="4" fill="#3a3a5a"/>
+  <!-- Content area -->
+  <rect x="820" y="160" width="140" height="12" rx="6" fill="#4a4a6a"/>
+  <rect x="820" y="190" width="260" height="8" rx="4" fill="#2a2a4a"/>
+  <rect x="820" y="210" width="220" height="8" rx="4" fill="#2a2a4a"/>
+  <rect x="820" y="230" width="240" height="8" rx="4" fill="#2a2a4a"/>
+  <!-- Color swatches -->
+  <rect x="820" y="270" width="40" height="40" rx="8" fill="#6366f1"/>
+  <rect x="870" y="270" width="40" height="40" rx="8" fill="#8b5cf6"/>
+  <rect x="920" y="270" width="40" height="40" rx="8" fill="#a78bfa"/>
+  <rect x="970" y="270" width="40" height="40" rx="8" fill="#c4b5fd"/>
+  <!-- Cards -->
+  <rect x="820" y="340" width="130" height="80" rx="8" fill="#2a2a4a"/>
+  <rect x="960" y="340" width="130" height="80" rx="8" fill="#2a2a4a"/>
+  <rect x="832" y="356" width="80" height="8" rx="4" fill="#4a4a6a"/>
+  <rect x="832" y="374" width="100" height="6" rx="3" fill="#3a3a5a"/>
+  <rect x="832" y="388" width="60" height="6" rx="3" fill="#3a3a5a"/>
+  <rect x="972" y="356" width="70" height="8" rx="4" fill="#4a4a6a"/>
+  <rect x="972" y="374" width="90" height="6" rx="3" fill="#3a3a5a"/>
+  <rect x="972" y="388" width="80" height="6" rx="3" fill="#3a3a5a"/>
+  <!-- URL -->
+  <text x="80" y="570" font-family="system-ui, sans-serif" font-size="20" fill="#4a4a6a">motif-vert.vercel.app</text>
+</svg>
