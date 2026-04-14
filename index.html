@@ -2,10 +2,77 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="motif — pick a design system vibe, customize tokens, and export to your AI coding agent in seconds." />
+
+    <!-- Primary SEO -->
     <title>motif — Design tokens for AI agents</title>
+    <meta name="description" content="Pick a design system vibe, customize tokens, and export to your AI coding agent in seconds. 10 style variants, 8 layouts, WCAG AA contrast. Free, no signup." />
+    <meta name="keywords" content="design tokens, design system, AI agents, CSS variables, Tailwind config, vibe coding, style variants, WCAG, accessibility, dark mode" />
+    <meta name="author" content="motif" />
+
+    <!-- Canonical URL — prevents duplicate indexing from Vercel preview URLs -->
+    <link rel="canonical" href="https://motif-vert.vercel.app" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Discord) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://motif-vert.vercel.app" />
+    <meta property="og:title" content="motif — Design tokens for AI agents" />
+    <meta property="og:description" content="Pick a design system vibe, customize tokens, and export to your AI coding agent in seconds. 10 style variants, 8 layouts, WCAG AA contrast." />
+    <meta property="og:image" content="https://motif-vert.vercel.app/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="motif" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="motif — Design tokens for AI agents" />
+    <meta name="twitter:description" content="Pick a design system vibe, customize tokens, and export to your AI coding agent in seconds. 10 style variants, 8 layouts, WCAG AA contrast." />
+    <meta name="twitter:image" content="https://motif-vert.vercel.app/og-image.svg" />
+
+    <!-- Theme color for browser chrome -->
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "motif",
+      "url": "https://motif-vert.vercel.app",
+      "description": "Pick a design system vibe, customize tokens, and export to your AI coding agent in seconds. 10 style variants, 8 layouts, WCAG AA contrast. Free, no signup.",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "10 style variants (Stripe, Spotify, Apple, GitHub, Notion, Vercel, Linear, Supabase, Shadcn, IBM Carbon)",
+        "8 layout types (SaaS, Blog, Landing, Portfolio, E-commerce, Docs, Community, Mobile)",
+        "Export to Markdown, JSON, CSS, Tailwind v3, Tailwind v4",
+        "WCAG AA contrast checking",
+        "Light and dark mode",
+        "Shareable URL state",
+        "OKLCH palette generator",
+        "44 design tokens"
+      ],
+      "screenshot": "https://motif-vert.vercel.app/og-image.svg",
+      "author": {
+        "@type": "Person",
+        "name": "Khalid Moukhtar"
+      },
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "inLanguage": "en"
+    }
+    </script>
 
     <!-- Google Fonts — Inter, Space Grotesk, DM Sans, Nunito, Playfair Display -->
     <!-- Used by variant typography and the font-family dropdown in the token editor. -->
