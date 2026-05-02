@@ -5,15 +5,16 @@ import './styles/global.css'
 import App from './App'
 
 // PostHog analytics — EU cloud, cookieless, no autocapture.
-// Public project token is safe to commit (write-only; cannot read data).
+// Token and host are read from VITE_PUBLIC_POSTHOG_KEY / VITE_PUBLIC_POSTHOG_HOST.
 // IP capture is disabled in PostHog project settings ("Discard client IP data").
-posthog.init('phc_Dhp7B4Xu57K2QCwDJ3D4Xxd7WZ2QKDfTeKCHY3L67PPt', {
-  api_host: 'https://eu.i.posthog.com',
+posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY as string, {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST as string,
   persistence: 'memory',        // no cookies, no localStorage — GDPR-safe
   autocapture: false,           // explicit events only; no blanket click capture
   capture_pageview: true,       // counts visits
   capture_pageleave: false,
 })
+posthog.register({ app: 'motif' })
 
 const root = document.getElementById('root')
 if (!root) throw new Error('Root element not found')

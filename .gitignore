@@ -35,6 +35,7 @@ Thumbs.db
 # Claude Code -- machine-specific settings and AI workflow methodology
 .claude/settings.json
 .claude/skills/
+.mcp.json
 
 # Session memory -- internal agent notes, not contributor docs
 memory/
